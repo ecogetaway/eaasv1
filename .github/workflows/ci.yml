@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run linter
-        run: npm run lint
+        run: npm run lint -- --max-warnings 100
         continue-on-error: true
 
   frontend-build:

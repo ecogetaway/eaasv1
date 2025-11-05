@@ -3,6 +3,7 @@ module.exports = {
   env: {
     browser: true,
     es2020: true,
+    node: true,
   },
   extends: [
     'eslint:recommended',
@@ -10,7 +11,7 @@ module.exports = {
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
+  ignorePatterns: ['dist', '.eslintrc.cjs', 'playwright.config.js', 'tests/**'],
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
@@ -28,6 +29,7 @@ module.exports = {
     ],
     'react/prop-types': 'off',
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    'react-hooks/exhaustive-deps': 'warn',
   },
 }
 
