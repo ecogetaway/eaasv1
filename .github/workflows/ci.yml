@@ -14,14 +14,19 @@ jobs:
       run:
         working-directory: ./eaas-backend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: eaas-backend/package-lock.json
-      - run: npm ci || npm install
-      - run: node --check src/server.js || echo "Syntax check complete"
+      - name: Install dependencies
+        run: npm install
+      - name: Check syntax
+        run: node --check src/server.js
+        continue-on-error: true
 
   frontend-lint:
     name: Frontend Lint
@@ -30,14 +35,19 @@ jobs:
       run:
         working-directory: ./eaas-frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: eaas-frontend/package-lock.json
-      - run: npm ci || npm install
-      - run: npm run lint || echo "Lint check complete"
+      - name: Install dependencies
+        run: npm install
+      - name: Run linter
+        run: npm run lint
+        continue-on-error: true
 
   frontend-build:
     name: Frontend Build
@@ -46,15 +56,18 @@ jobs:
       run:
         working-directory: ./eaas-frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
           cache-dependency-path: eaas-frontend/package-lock.json
-      - run: npm ci || npm install
-      - run: npm run build
-        continue-on-error: true
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5001/api' }}
           VITE_WS_URL: ${{ secrets.VITE_WS_URL || 'ws://localhost:5001' }}
