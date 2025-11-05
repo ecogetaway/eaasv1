@@ -54,8 +54,8 @@ jobs:
           cache-dependency-path: eaas-frontend/package-lock.json
       - run: npm ci || npm install
       - run: npm run build
+        continue-on-error: true
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || 'http://localhost:5001/api' }}
           VITE_WS_URL: ${{ secrets.VITE_WS_URL || 'ws://localhost:5001' }}
-          continue-on-error: true
 
