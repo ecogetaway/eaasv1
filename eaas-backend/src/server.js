@@ -26,14 +26,35 @@ const allowedOrigins = [
   'http://localhost:5174',           // Local development (Vite alternative)
   'http://localhost:3000',           // Alternative local dev port
   'https://ecogetaway.github.io',    // GitHub Pages production
+  'https://eaasproj.netlify.app',    // Netlify deployment
+  'https://eaasproject.netlify.app', // Netlify deployment (alt)
+  'https://eaasp.vercel.app',        // Vercel deployment
   process.env.FRONTEND_URL,          // Custom frontend URL from env
-].filter(Boolean); // Remove undefined values
+].filter(Boolean).concat(
+  // Also allow any Vercel/Netlify preview URLs
+  process.env.NODE_ENV === 'production' ? [] : []
+);
+
+// In production, also allow Vercel and Netlify preview domains
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (origin.endsWith('.vercel.app')) return true;
+  if (origin.endsWith('.netlify.app')) return true;
+  return false;
+};
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    origin: function (origin, callback) {
+      if (isAllowedOrigin(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -46,7 +67,7 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+    if (isAllowedOrigin(origin) || process.env.NODE_ENV === 'development') {
       callback(null, true);
     } else {
       console.warn(`CORS blocked origin: ${origin}`);
