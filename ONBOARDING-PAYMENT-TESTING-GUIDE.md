@@ -15,21 +15,24 @@
    - Email: `demo1@eaas.com` or `demo2@eaas.com`
    - Password: `Demo@123`
 
-2. **Navigate to Onboarding**:
-   - Go to `/onboarding` URL directly, OR
-   - If you already have a subscription, you may need to use a new account
+2. **Navigate to Services & Plans**:
+   - Click on **"Services & Plans"** in the navbar (or go to `/services-plans`)
+   - You'll see 3 plan cards: Solar Starter, Hybrid Freedom, Grid Independent
 
-3. **Step 1 - User Information**:
+3. **Click "Subscribe Now"** on any plan:
+   - This will navigate you to the **Onboarding** flow (`/onboarding`)
+
+4. **Step 1 - User Information**:
    - Enter your address (e.g., "123 Main Street, Mumbai, Maharashtra 400001")
    - Enter monthly bill amount (e.g., "5000")
    - Click "Next Step"
    - ⚠️ **If you see an error**: It's okay - the recommendation is optional. You can still proceed.
 
-4. **Step 2 - Plan Selection**:
+5. **Step 2 - Plan Selection**:
    - Select any plan (Basic Solar, Solar + Battery, or Premium)
    - Click "Continue to Payment"
 
-5. **Step 3 - Payment**:
+6. **Step 3 - Payment**:
    - Review the order summary
    - Click **"Pay ₹XXX"** button
    - **Razorpay Modal Opens!** 🎉
@@ -114,14 +117,15 @@
 
 1. **Login** → Use demo account: `demo1@eaas.com` / `Demo@123`
 
-2. **Option A - Full Flow:**
-   - Go to `/onboarding`
-   - Complete Step 1 (address, monthly bill)
-   - Complete Step 2 (select plan)
-   - Step 3 → Click "Pay" button
-   - **Razorpay modal appears!**
+2. **Option A - Full Flow (Recommended):**
+   - Click **"Services & Plans"** in the navbar
+   - Click **"Subscribe Now"** on any plan
+   - **Step 1**: Enter address and monthly bill → Click "Next"
+   - **Step 2**: Select a plan → Click "Continue to Payment"
+   - **Step 3**: Click **"Pay ₹XXX"** button
+   - **Razorpay modal appears!** 🎉
 
-3. **Option B - Quick Test:**
+3. **Option B - Quick Test via Billing:**
    - Go to **Billing** page
    - Click on any **pending bill**
    - Click **"Pay"** button
@@ -146,12 +150,13 @@
 ## ✅ Testing Checklist
 
 - [ ] Login with demo account
-- [ ] Navigate to onboarding
-- [ ] Complete Step 1 (with/without errors)
+- [ ] Navigate to **Services & Plans** page
+- [ ] Click **"Subscribe Now"** on a plan
+- [ ] Complete Step 1 (address, monthly bill) - with/without errors
 - [ ] Complete Step 2 (select plan)
 - [ ] Step 3 - Payment button works
 - [ ] Razorpay modal opens
-- [ ] Can switch between payment method tabs
+- [ ] Can switch between payment method tabs (UPI, Card, Net Banking, Wallets)
 - [ ] UPI payment flow works
 - [ ] Card payment flow works (with OTP)
 - [ ] Net Banking selection works
