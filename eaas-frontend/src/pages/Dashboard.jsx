@@ -167,8 +167,8 @@ const DashboardContent = () => {
               <DiscomStatusCard userId={user?.userId} />
             </div>
             <div>
-              <h2 className="text-xl font-semibold mb-4">Active Alerts</h2>
-              <AlertList showOnlyActive={true} />
+            <h2 className="text-xl font-semibold mb-4">Active Alerts</h2>
+            <AlertList showOnlyActive={true} />
             </div>
           </div>
         </div>

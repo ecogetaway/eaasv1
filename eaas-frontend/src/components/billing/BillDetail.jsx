@@ -41,7 +41,7 @@ const BillDetail = () => {
       // Wait for modal to close animation
       setTimeout(() => {
         setShowPaymentModal(false);
-        loadBill(); // Reload bill to show updated status
+      loadBill(); // Reload bill to show updated status
       }, 500);
     } catch (error) {
       console.error('Error processing payment:', error);
@@ -191,13 +191,13 @@ const BillDetail = () => {
           <p className="text-gray-600 mb-4">
             Complete your payment securely using UPI, Cards, Net Banking, or Wallets.
           </p>
-          <button
+            <button
             onClick={() => setShowPaymentModal(true)}
-            className="btn btn-primary w-full flex items-center justify-center"
-          >
-            <CreditCard className="w-4 h-4 mr-2" />
-            Pay {formatCurrency(bill.total_amount)}
-          </button>
+              className="btn btn-primary w-full flex items-center justify-center"
+            >
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  Pay {formatCurrency(bill.total_amount)}
+            </button>
           <p className="text-xs text-gray-400 mt-3 text-center">
             Demo mode: No actual charges will be made
           </p>
