@@ -71,12 +71,6 @@ const Navbar = () => {
                   Billing
                 </Link>
                 <Link
-                  to="/ai-advisor"
-                  className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  AI Advisor
-                </Link>
-                <Link
                   to="/support"
                   className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                 >
@@ -99,6 +93,12 @@ const Navbar = () => {
                   className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Settings
+                </Link>
+                <Link
+                  to="/ai-advisor"
+                  className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium"
+                >
+                  AI Advisor
                 </Link>
                 <button
                   onClick={() => setNotificationOpen(true)}
@@ -189,13 +189,6 @@ const Navbar = () => {
               Billing
             </Link>
             <Link
-              to="/ai-advisor"
-              className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              AI Advisor
-            </Link>
-            <Link
               to="/subscription"
               className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
@@ -215,6 +208,13 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Settings
+            </Link>
+            <Link
+              to="/ai-advisor"
+              className="block text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              AI Advisor
             </Link>
             <Link
               to="/support"
