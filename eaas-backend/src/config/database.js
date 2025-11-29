@@ -6,8 +6,12 @@ dotenv.config();
 const { Pool } = pg;
 
 // SSL configuration for Supabase
-// Always use SSL in production, and handle self-signed certificates
-const sslConfig = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.includes('supabase') 
+// Always use SSL for Supabase connections and handle self-signed certificates
+const isSupabase = process.env.DATABASE_URL?.includes('supabase') || process.env.DATABASE_URL?.includes('pooler.supabase.com');
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Use SSL for Supabase or in production, and accept self-signed certificates
+const sslConfig = (isSupabase || isProduction) 
   ? { 
       rejectUnauthorized: false  // Accept self-signed certificates from Supabase
     } 
