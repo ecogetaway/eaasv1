@@ -83,7 +83,7 @@ const Discom = () => {
           ) : (
             showForm ? (
               <ApplicationForm 
-                userId={user?.userId}
+                userId={user?.userId || user?.user_id}
                 onSuccess={() => {
                   setShowForm(false);
                   loadStatus();
