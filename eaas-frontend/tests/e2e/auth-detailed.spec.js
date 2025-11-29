@@ -62,11 +62,11 @@ test.describe('Authentication Flow - Detailed', () => {
     await loginButton.click();
     await expect(page).toHaveURL(/.*login/);
 
-    // 2. Enter email: demo1@eaas.com
-    await page.fill('input[type="email"]', 'demo1@eaas.com');
+    // 2. Enter email: demo@eaas.com (updated to match mock data)
+    await page.fill('input[type="email"]', 'demo@eaas.com');
 
-    // 3. Enter password: Demo@123
-    await page.fill('input[type="password"]', 'Demo@123');
+    // 3. Enter password: demo123 (updated to match mock data)
+    await page.fill('input[type="password"]', 'demo123');
 
     // 4. Submit
     await page.click('button[type="submit"]');

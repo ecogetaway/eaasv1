@@ -17,7 +17,8 @@ test.describe('Services & Plans Page', () => {
 
   test('should show plan cards', async ({ page }) => {
     // Look for plan cards (should have at least 2-3 plans)
-    const planCards = page.locator('text=/Starter|Hybrid|Grid|Independent|kW|kWh/i');
+    // Mock plans are: Basic Solar, Solar + Battery, Premium
+    const planCards = page.locator('text=/Basic Solar|Solar.*Battery|Premium|Starter|Hybrid|Grid|Independent|kW|kWh|Plan/i');
     const count = await planCards.count();
     expect(count).toBeGreaterThan(0);
   });

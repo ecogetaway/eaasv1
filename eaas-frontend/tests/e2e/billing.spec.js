@@ -164,12 +164,26 @@ test.describe('Billing Module', () => {
         // Click pay button
         await payButton.click();
         
-        // Wait for payment processing (mock payment takes ~2 seconds)
-        await page.waitForTimeout(3000);
+        // Wait for payment modal to open
+        await page.waitForTimeout(1000);
+        
+        // Payment modal should be visible (Razorpay mock)
+        const paymentModal = page.locator('text=/Razorpay|Payment|UPI|Card|Net Banking/i');
+        if (await paymentModal.isVisible({ timeout: 5000 })) {
+          // Complete payment in modal (select UPI and wait)
+          const upiOption = page.locator('text=/UPI/i').first();
+          if (await upiOption.isVisible({ timeout: 2000 })) {
+            await upiOption.click();
+            await page.waitForTimeout(2000);
+          }
+          
+          // Look for payment success in modal or wait for modal to close
+          await page.waitForTimeout(4000);
+        }
 
-        // Should see success message or updated status
-        const successMessage = page.locator('text=/success|paid|processed/i');
-        await expect(successMessage.first()).toBeVisible({ timeout: 10000 });
+        // After payment, should see "Payment Completed" or bill status updated
+        const successMessage = page.locator('text=/Payment Completed|Paid on|success|paid/i');
+        await expect(successMessage.first()).toBeVisible({ timeout: 15000 });
       }
     } else {
       test.skip('No pending bills available for payment test');

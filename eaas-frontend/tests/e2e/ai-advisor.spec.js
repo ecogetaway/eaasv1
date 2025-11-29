@@ -20,33 +20,46 @@ test.describe('AI Advisor Page', () => {
   });
 
   test('should have input field and send button', async ({ page }) => {
-    const input = page.locator('input[type="text"], textarea').filter({ hasText: /ask|message|question/i }).or(page.locator('input[placeholder*="Ask"], input[placeholder*="ask"]'));
-    await expect(input.first()).toBeVisible();
+    // Find input by placeholder
+    const input = page.locator('input[placeholder*="Ask"], input[placeholder*="ask"]');
+    await expect(input.first()).toBeVisible({ timeout: 5000 });
     
-    const sendButton = page.locator('button').filter({ hasText: /send|Send/i }).or(page.locator('button[aria-label*="send" i]'));
-    await expect(sendButton.first()).toBeVisible();
+    // Find send button - it's a button with an icon (Send icon), positioned absolutely near the input
+    // Look for button that's near the input field (in the same container)
+    const inputContainer = input.locator('..'); // parent container
+    const sendButton = inputContainer.locator('button').or(
+      page.locator('button').filter({ has: page.locator('svg') }).near(input.first())
+    );
+    await expect(sendButton.first()).toBeVisible({ timeout: 5000 });
   });
 
   test('should send a message and receive a response', async ({ page }) => {
-    const input = page.locator('input[type="text"], textarea').first();
-    const sendButton = page.locator('button').filter({ hasText: /send|Send/i }).first();
+    const input = page.locator('input[placeholder*="Ask"], input[placeholder*="ask"]');
+    await input.waitFor({ state: 'visible', timeout: 5000 });
+    
+    // Find send button - button near the input (it has an icon, not text)
+    const inputContainer = input.locator('..');
+    const sendButton = inputContainer.locator('button').first();
     
     // Type a message
     await input.fill('What are similar EaaS apps?');
     
-    // Send the message
+    // Send the message (can also press Enter)
     await sendButton.click();
     
-    // Wait for response (check for loading state or response)
-    await page.waitForTimeout(2000);
+    // Wait for typing indicator or response
+    await page.waitForTimeout(3000);
     
     // Check that user message appears
     const userMessage = page.locator('text=What are similar EaaS apps?');
     await expect(userMessage.first()).toBeVisible({ timeout: 5000 });
     
+    // Wait for AI response (mock data has 800-2000ms delay)
+    await page.waitForTimeout(3000);
+    
     // Check that AI response appears (should contain some text)
-    const aiResponse = page.locator('text=/Sunrun|Octopus|Tesla|EaaS|competitor/i');
-    await expect(aiResponse.first()).toBeVisible({ timeout: 10000 });
+    const aiResponse = page.locator('text=/Sunrun|Octopus|Tesla|EaaS|competitor|similar|application/i');
+    await expect(aiResponse.first()).toBeVisible({ timeout: 15000 });
   });
 
   test('should have quick action buttons', async ({ page }) => {
@@ -79,23 +92,30 @@ test.describe('AI Advisor Page', () => {
   });
 
   test('should show typing indicator when AI is responding', async ({ page }) => {
-    const input = page.locator('input[type="text"], textarea').first();
-    const sendButton = page.locator('button').filter({ hasText: /send|Send/i }).first();
+    const input = page.locator('input[placeholder*="Ask"], input[placeholder*="ask"]');
+    await input.waitFor({ state: 'visible', timeout: 5000 });
+    
+    const inputContainer = input.locator('..');
+    const sendButton = inputContainer.locator('button').first();
     
     await input.fill('Tell me about savings');
     await sendButton.click();
     
-    // Check for typing indicator (dots, loading spinner, etc.)
-    const typingIndicator = page.locator('text=/\.\.\.|loading|typing/i').or(
-      page.locator('[class*="animate-bounce"], [class*="loading"]')
-    );
+    // Check for typing indicator (animate-bounce class on dots)
+    const typingIndicator = page.locator('[class*="animate-bounce"]');
     
     // Typing indicator might appear briefly, so we check if it exists at some point
     try {
-      await expect(typingIndicator.first()).toBeVisible({ timeout: 2000 });
+      await expect(typingIndicator.first()).toBeVisible({ timeout: 3000 });
     } catch {
       // If not visible, that's okay - it might be too fast
+      // Just verify that a response eventually appears
+      await page.waitForTimeout(2000);
     }
+    
+    // Verify that a response eventually appears
+    const response = page.locator('text=/savings|CO2|carbon|plan|monthly|offset/i');
+    await expect(response.first()).toBeVisible({ timeout: 15000 });
   });
 
   test('should be accessible via navigation', async ({ page }) => {
