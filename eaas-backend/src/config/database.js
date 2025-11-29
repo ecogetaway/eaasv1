@@ -10,22 +10,19 @@ const { Pool } = pg;
 const isSupabase = process.env.DATABASE_URL?.includes('supabase') || process.env.DATABASE_URL?.includes('pooler.supabase.com');
 const isProduction = process.env.NODE_ENV === 'production';
 
-// Use SSL for Supabase or in production, and accept self-signed certificates
-// For Supabase, we need to explicitly set SSL and accept self-signed certs
-let sslConfig = false;
-if (isSupabase || isProduction) {
-  sslConfig = {
-    rejectUnauthorized: false  // Accept self-signed certificates from Supabase
-  };
-}
+// For Supabase, we MUST use SSL but accept self-signed certificates
+// The rejectUnauthorized: false is critical for Supabase's self-signed certs
+const sslConfig = (isSupabase || isProduction) 
+  ? { 
+      rejectUnauthorized: false,  // Accept self-signed certificates from Supabase
+      require: true               // Require SSL connection
+    } 
+  : false;
 
-// Parse connection string to remove SSL params (we'll handle SSL in Pool config)
-let connectionString = process.env.DATABASE_URL || '';
-// Remove sslmode from connection string if present (we handle it in Pool config)
-connectionString = connectionString.replace(/[?&]sslmode=[^&]*/gi, '');
+console.log('Database SSL Config:', { isSupabase, isProduction, sslConfig: sslConfig ? 'enabled' : 'disabled' });
 
 const pool = new Pool({
-  connectionString: connectionString,
+  connectionString: process.env.DATABASE_URL,
   ssl: sslConfig,
   max: 20,
   idleTimeoutMillis: 30000,
