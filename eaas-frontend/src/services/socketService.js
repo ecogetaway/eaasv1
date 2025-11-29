@@ -1,13 +1,37 @@
 import { io } from 'socket.io-client';
 import { WS_URL } from '../utils/constants.js';
+import { mockCurrentEnergy } from '../data/mockData.js';
+
+// For demo: Use mock data as primary source
+const USE_MOCK_DATA = true; // Set to false to use real backend
 
 class SocketService {
   constructor() {
     this.socket = null;
     this.isConnected = false;
+    this.mockInterval = null;
+    this.energyCallbacks = [];
   }
 
   connect() {
+    if (USE_MOCK_DATA) {
+      // Simulate WebSocket connection for demo
+      console.log('✅ Mock WebSocket connected (demo mode)');
+      this.isConnected = true;
+      
+      // Start simulating real-time energy updates
+      this.startMockUpdates();
+      
+      // Return a mock socket object
+      return {
+        connected: true,
+        emit: () => {},
+        on: () => {},
+        off: () => {},
+        disconnect: () => this.stopMockUpdates()
+      };
+    }
+    
     if (this.socket?.connected) {
       return this.socket;
     }
@@ -37,6 +61,35 @@ class SocketService {
     return this.socket;
   }
 
+  startMockUpdates() {
+    // Simulate real-time energy updates every 5 seconds
+    this.mockInterval = setInterval(() => {
+      const variation = () => (Math.random() - 0.5) * 0.3;
+      const mockData = {
+        ...mockCurrentEnergy,
+        timestamp: new Date().toISOString(),
+        solar_generation: Math.max(0, mockCurrentEnergy.solar_generation + variation()),
+        grid_import: Math.max(0, mockCurrentEnergy.grid_import + variation()),
+        grid_export: Math.max(0, mockCurrentEnergy.grid_export + variation()),
+        battery_charge: Math.max(0, Math.min(5, mockCurrentEnergy.battery_charge + variation())),
+        total_consumption: Math.max(0, mockCurrentEnergy.total_consumption + variation())
+      };
+      
+      // Call all registered callbacks
+      this.energyCallbacks.forEach(callback => {
+        callback(mockData);
+      });
+    }, 5000);
+  }
+
+  stopMockUpdates() {
+    if (this.mockInterval) {
+      clearInterval(this.mockInterval);
+      this.mockInterval = null;
+    }
+    this.isConnected = false;
+  }
+
   subscribeToUser(userId) {
     if (!this.socket) {
       this.connect();
@@ -51,6 +104,15 @@ class SocketService {
   }
 
   onEnergyUpdate(callback) {
+    if (USE_MOCK_DATA) {
+      // Store callback for mock updates
+      this.energyCallbacks.push(callback);
+      if (!this.isConnected) {
+        this.connect();
+      }
+      return;
+    }
+    
     if (!this.socket) {
       this.connect();
     }
@@ -58,12 +120,24 @@ class SocketService {
   }
 
   offEnergyUpdate(callback) {
+    if (USE_MOCK_DATA) {
+      // Remove callback from mock updates
+      this.energyCallbacks = this.energyCallbacks.filter(cb => cb !== callback);
+      return;
+    }
+    
     if (this.socket) {
       this.socket.off('energy_update', callback);
     }
   }
 
   disconnect() {
+    if (USE_MOCK_DATA) {
+      this.stopMockUpdates();
+      this.energyCallbacks = [];
+      return;
+    }
+    
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;

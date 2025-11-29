@@ -1,4 +1,8 @@
 import api from './api.js';
+import { mockMeters } from '../data/mockData.js';
+
+// For demo: Use mock data as primary source
+const USE_MOCK_DATA = true; // Set to false to use real backend
 
 export const meterService = {
   /**
@@ -7,8 +11,18 @@ export const meterService = {
    * @returns {Promise<Array>} Array of meters
    */
   getUserMeters: async (userId) => {
-    const response = await api.get(`/meters/user/${userId}`);
-    return response.data.meters;
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 300));
+      return mockMeters;
+    }
+    
+    try {
+      const response = await api.get(`/meters/user/${userId}`);
+      return response.data.meters;
+    } catch (error) {
+      console.warn('Using mock meters data');
+      return mockMeters;
+    }
   },
 
   /**
@@ -17,8 +31,18 @@ export const meterService = {
    * @returns {Promise<Object>} Meter object
    */
   getMeterById: async (meterId) => {
-    const response = await api.get(`/meters/${meterId}`);
-    return response.data.meter;
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 200));
+      return mockMeters.find(m => m.meter_id === meterId) || mockMeters[0];
+    }
+    
+    try {
+      const response = await api.get(`/meters/${meterId}`);
+      return response.data.meter;
+    } catch (error) {
+      console.warn('Using mock meter data');
+      return mockMeters.find(m => m.meter_id === meterId) || mockMeters[0];
+    }
   },
 
   /**
@@ -27,8 +51,22 @@ export const meterService = {
    * @returns {Promise<Object>} Updated meter object
    */
   syncMeter: async (meterId) => {
-    const response = await api.post(`/meters/${meterId}/sync`);
-    return response.data.meter;
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const meter = mockMeters.find(m => m.meter_id === meterId) || mockMeters[0];
+      meter.last_sync = new Date().toISOString();
+      return meter;
+    }
+    
+    try {
+      const response = await api.post(`/meters/${meterId}/sync`);
+      return response.data.meter;
+    } catch (error) {
+      console.warn('Using mock meter sync');
+      const meter = mockMeters.find(m => m.meter_id === meterId) || mockMeters[0];
+      meter.last_sync = new Date().toISOString();
+      return meter;
+    }
   },
 
   /**
@@ -37,8 +75,32 @@ export const meterService = {
    * @returns {Promise<Object>} Created meter object
    */
   registerMeter: async (meterData) => {
-    const response = await api.post('/meters', meterData);
-    return response.data.meter;
+    if (USE_MOCK_DATA) {
+      await new Promise(resolve => setTimeout(resolve, 600));
+      const newMeter = {
+        ...mockMeters[0],
+        meter_id: `meter_${Date.now()}`,
+        meter_number: meterData.meter_number || `MTR${Date.now()}`,
+        ...meterData,
+        created_at: new Date().toISOString()
+      };
+      mockMeters.push(newMeter);
+      return newMeter;
+    }
+    
+    try {
+      const response = await api.post('/meters', meterData);
+      return response.data.meter;
+    } catch (error) {
+      console.warn('Using mock meter registration');
+      const newMeter = {
+        ...mockMeters[0],
+        meter_id: `meter_${Date.now()}`,
+        meter_number: meterData.meter_number || `MTR${Date.now()}`,
+        ...meterData
+      };
+      return newMeter;
+    }
   },
 };
 

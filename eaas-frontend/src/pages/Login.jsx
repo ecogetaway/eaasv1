@@ -92,8 +92,12 @@ const Login = () => {
                 />
               </div>
 
-              <div className="text-sm text-gray-600">
-                Demo: demo1@eaas.com / Demo@123
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm">
+                <p className="font-semibold text-blue-900 mb-2">Demo Credentials:</p>
+                <div className="space-y-1 text-blue-800">
+                  <p><strong>User 1:</strong> demo@eaas.com / demo123</p>
+                  <p><strong>User 2:</strong> demo2@eaas.com / demo123</p>
+                </div>
               </div>
 
               <button
