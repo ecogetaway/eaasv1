@@ -21,6 +21,7 @@ import DesignSystemPage from './pages/design-system/DesignSystemPage.jsx';
 import ButtonPage from './pages/design-system/ButtonPage.jsx';
 import BadgePage from './pages/design-system/BadgePage.jsx';
 import IntelliSmartAdmin from './pages/IntelliSmartAdmin.jsx';
+import IntelliSmartAdmin from './pages/IntelliSmartAdmin.jsx';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
