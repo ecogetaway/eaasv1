@@ -20,7 +20,7 @@ import Discom from './pages/Discom.jsx';
 import DesignSystemPage from './pages/design-system/DesignSystemPage.jsx';
 import ButtonPage from './pages/design-system/ButtonPage.jsx';
 import BadgePage from './pages/design-system/BadgePage.jsx';
-
+import IntelliSmartAdmin from './pages/IntelliSmartAdmin.jsx';
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
@@ -130,6 +130,7 @@ const AppRoutes = () => {
       <Route path="/design-system" element={<DesignSystemPage />} />
       <Route path="/design-system/button" element={<ButtonPage />} />
       <Route path="/design-system/badge" element={<BadgePage />} />
+      <Route path="/admin" element={<IntelliSmartAdmin />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );
