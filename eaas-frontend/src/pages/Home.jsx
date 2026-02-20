@@ -159,38 +159,21 @@ const Home = () => {
           </div>
         </section>
       </main>
-     {/* IntelliSmart Admin Portal Link */}
+
+      {/* IntelliSmart Admin Portal Link */}
       <section className="py-6 bg-gray-900 text-center">
         <p className="text-gray-400 text-sm mb-2">Are you an IntelliSmart operator?</p>
-        <Link 
-          to="/admin" 
+        <Link
+          to="/admin"
           className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 text-sm font-semibold border border-green-400/30 hover:border-green-300/50 rounded-lg px-4 py-2 transition-all"
         >
           ⚡ IntelliSmart Admin Portal →
         </Link>
       </section>
-```
 
-So it should look like this:
-```
-161      </main>
-162
-163      {/* IntelliSmart Admin Portal Link */}
-164      <section className="py-6 bg-gray-900 text-center">
-165        <p className="text-gray-400 text-sm mb-2">Are you an IntelliSmart operator?</p>
-166        <Link 
-167          to="/admin" 
-168          className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 text-sm font-semibold border border-green-400/30 hover:border-green-300/50 rounded-lg px-4 py-2 transition-all"
-169        >
-170          ⚡ IntelliSmart Admin Portal →
-171        </Link>
-172      </section>
-173
-174      <Footer />
       <Footer />
     </div>
   );
 };
 
 export default Home;
-
