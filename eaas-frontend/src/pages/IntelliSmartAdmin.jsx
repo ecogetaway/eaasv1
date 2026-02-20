@@ -48,6 +48,40 @@ const deploymentReadiness = [
   { state: "Assam", infra: 68, dataQuality: 72, gridStability: 61, overall: 67 },
 ];
 
+// CBQoS Data
+const trafficData = [
+  { time: "12am", critical: 12, high: 34, standard: 180 },
+  { time: "3am",  critical: 8,  high: 22, standard: 120 },
+  { time: "6am",  critical: 18, high: 48, standard: 240 },
+  { time: "9am",  critical: 42, high: 98, standard: 520 },
+  { time: "12pm", critical: 38, high: 112, standard: 680 },
+  { time: "3pm",  critical: 29, high: 88, standard: 590 },
+  { time: "6pm",  critical: 55, high: 134, standard: 720 },
+  { time: "9pm",  critical: 31, high: 76, standard: 410 },
+];
+
+const atcLossData = [
+  { state: "UP", supplied: 9420, billed: 7650, loss: 18.8 },
+  { state: "Gujarat", supplied: 7280, billed: 6540, loss: 10.2 },
+  { state: "Bihar", supplied: 5610, billed: 4120, loss: 26.6 },
+  { state: "Assam", supplied: 2890, billed: 2010, loss: 30.4 },
+];
+
+const saidiData = [
+  { month: "Sep", saidi: 8.2, saifi: 3.1 },
+  { month: "Oct", saidi: 7.6, saifi: 2.8 },
+  { month: "Nov", saidi: 9.1, saifi: 3.4 },
+  { month: "Dec", saidi: 6.8, saifi: 2.5 },
+  { month: "Jan", saidi: 5.9, saifi: 2.1 },
+];
+
+const networkNodes = [
+  { state: "UP", total: 8420, nbiot: 5080, rfmesh: 2890, plc: 450, silent: 312 },
+  { state: "Gujarat", total: 6750, nbiot: 4200, rfmesh: 2180, plc: 370, silent: 98 },
+  { state: "Bihar", total: 5100, nbiot: 2800, rfmesh: 1900, plc: 400, silent: 487 },
+  { state: "Assam", total: 2300, nbiot: 1200, rfmesh: 820, plc: 280, silent: 221 },
+];
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 function StatCard({ icon, label, value, sub, accent }) {
   return (
@@ -182,6 +216,175 @@ function LoginScreen({ onLogin }) {
           <div style={{ fontSize: 11, color: "#10b981", fontWeight: 700, marginBottom: 4 }}>DEMO CREDENTIALS</div>
           <div style={{ fontSize: 12, color: "#94a3b8" }}>admin@intellismart.in / admin123</div>
         </div>
+
+        {/* ── CBQoS & AMI 2.0 TAB ── */}
+        {activeTab === "cbqos" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>CBQoS & AMI 2.0 Network</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>
+                Class-Based Quality of Service managing AMI 2.0 meter data traffic — ensuring critical grid signals are always prioritized
+              </p>
+            </div>
+
+            <div style={{
+              ...styles.card, marginBottom: 24,
+              background: "linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.08))",
+              borderColor: "rgba(16,185,129,0.2)"
+            }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+                {[
+                  { icon: "📡", title: "Edge Intelligence", desc: "Meters act as edge computers, processing data locally in real-time" },
+                  { icon: "↔️", title: "Bidirectional Flow", desc: "Two-way energy management for solar, EVs and home batteries" },
+                  { icon: "🔗", title: "High-Freq Comms", desc: "NB-IoT / RF Mesh / 4G/5G near-instantaneous communication" },
+                  { icon: "🧠", title: "NILM AI", desc: "Appliance-level disaggregation from a single meter reading" },
+                ].map(f => (
+                  <div key={f.title} style={{ textAlign: "center", padding: "8px" }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>{f.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9", marginBottom: 4 }}>{f.title}</div>
+                    <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{f.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={styles.grid4}>
+              <StatCard icon="🔴" label="Critical Traffic" value="55 req/s" sub="Last gasp · Grid alerts" accent="#ef4444" />
+              <StatCard icon="🟡" label="High Priority" value="134 req/s" sub="Theft · Demand response" accent="#f59e0b" />
+              <StatCard icon="🟢" label="Standard Traffic" value="720 req/s" sub="Billing · Firmware updates" accent="#10b981" />
+              <StatCard icon="📵" label="Silent Meters" value="1,118" sub="Not communicating now" accent="#8b5cf6" />
+            </div>
+
+            <SectionTitle>CBQoS Traffic Priority Classification (req/s)</SectionTitle>
+            <div style={{ ...styles.card, marginBottom: 24 }}>
+              <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+                {[
+                  { color: "#ef4444", label: "Critical — Outage alerts, last-gasp, grid stability" },
+                  { color: "#f59e0b", label: "High — Theft anomalies, demand response" },
+                  { color: "#10b981", label: "Standard — Billing, usage reports, firmware" },
+                ].map(t => (
+                  <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: "#94a3b8" }}>{t.label}</span>
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={trafficData}>
+                  <defs>
+                    {[["critical","#ef4444"],["high","#f59e0b"],["standard","#10b981"]].map(([k,c]) => (
+                      <linearGradient key={k} id={"cg-" + k} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={c} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={c} stopOpacity={0} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="time" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                  <Area type="monotone" dataKey="critical" name="Critical" stroke="#ef4444" fill="url(#cg-critical)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="high" name="High Priority" stroke="#f59e0b" fill="url(#cg-high)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="standard" name="Standard" stroke="#10b981" fill="url(#cg-standard)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={styles.grid2}>
+              <div>
+                <SectionTitle>AT&C Loss by State</SectionTitle>
+                <div style={styles.card}>
+                  <div style={{ marginBottom: 12, fontSize: 12, color: "#64748b" }}>
+                    Aggregate Technical & Commercial loss = Energy supplied vs energy billed
+                  </div>
+                  {atcLossData.map((s, i) => {
+                    const colors = ["#10b981","#8b5cf6","#f59e0b","#ef4444"];
+                    const c = colors[i];
+                    return (
+                      <div key={s.state} style={{ marginBottom: 16 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap", gap: 4 }}>
+                          <span style={{ fontSize: 13, color: "#f1f5f9", fontWeight: 600 }}>{s.state}</span>
+                          <div style={{ display: "flex", gap: 12 }}>
+                            <span style={{ fontSize: 11, color: "#64748b" }}>Supplied: {s.supplied} MU</span>
+                            <span style={{ fontSize: 11, color: "#64748b" }}>Billed: {s.billed} MU</span>
+                            <span style={{ fontSize: 12, fontWeight: 800, color: s.loss > 20 ? "#ef4444" : "#f59e0b" }}>{s.loss}% loss</span>
+                          </div>
+                        </div>
+                        <ReadinessBar value={100 - s.loss} color={s.loss > 20 ? "#ef4444" : c} />
+                      </div>
+                    );
+                  })}
+                  <div style={{ marginTop: 16, padding: "12px", background: "rgba(16,185,129,0.06)", borderRadius: 10, border: "1px solid rgba(16,185,129,0.15)" }}>
+                    <div style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>EaaS Impact on AT&C</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Solar EaaS consumers reduce grid draw, directly lowering technical losses and improving AT&C metrics for DISCOMs</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <SectionTitle>Grid Reliability — SAIDI / SAIFI Trend</SectionTitle>
+                <div style={styles.card}>
+                  <div style={{ marginBottom: 12, fontSize: 12, color: "#64748b" }}>
+                    SAIDI = Avg outage duration (hrs/customer) · SAIFI = Avg outage frequency
+                  </div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={saidiData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="month" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                      <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                      <Line type="monotone" dataKey="saidi" name="SAIDI (hrs)" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} />
+                      <Line type="monotone" dataKey="saifi" name="SAIFI (count)" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(59,130,246,0.06)", borderRadius: 10, border: "1px solid rgba(59,130,246,0.15)" }}>
+                    <div style={{ fontSize: 12, color: "#3b82f6", fontWeight: 700 }}>📉 Improving trend</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>SAIDI reduced 28% over 5 months — faster outage detection via AMI 2.0 real-time alerts</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <SectionTitle>AMI 2.0 Communication Protocol Distribution</SectionTitle>
+            <div style={styles.card}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    {["State", "Total Meters", "NB-IoT", "RF Mesh", "PLC", "Silent", "Network Health"].map(h => (
+                      <th key={h} style={{ textAlign: "left", padding: "10px 14px", fontSize: 11, color: "#64748b", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {networkNodes.map((n) => {
+                    const health = (((n.total - n.silent) / n.total) * 100).toFixed(1);
+                    const healthColor = health > 95 ? "#10b981" : health > 90 ? "#f59e0b" : "#ef4444";
+                    return (
+                      <tr key={n.state} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <td style={{ padding: "14px", fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>{n.state}</td>
+                        <td style={{ padding: "14px", fontSize: 13, color: "#94a3b8", fontFamily: "'DM Mono', monospace" }}>{n.total.toLocaleString("en-IN")}</td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(59,130,246,0.15)", color: "#3b82f6", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.nbiot.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(16,185,129,0.15)", color: "#10b981", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.rfmesh.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(139,92,246,0.15)", color: "#8b5cf6", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.plc.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.silent.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3 }}>
+                              <div style={{ width: health + "%", height: "100%", background: healthColor, borderRadius: 3 }} />
+                            </div>
+                            <span style={{ fontSize: 12, color: healthColor, fontWeight: 700, width: 42 }}>{health}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
       </div>
     </div>
   );
@@ -207,6 +410,7 @@ export default function IntelliSmartAdmin() {
     { id: "theft", label: "🚨 Anomaly Alerts" },
     { id: "opportunity", label: "💰 Revenue Opportunity" },
     { id: "readiness", label: "🚀 Deployment Readiness" },
+    { id: "cbqos", label: "🌐 CBQoS & AMI 2.0" },
   ];
 
   const styles = {
@@ -607,6 +811,175 @@ export default function IntelliSmartAdmin() {
                   <p style={{ margin: 0, fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>{p.desc}</p>
                 </div>
               ))}
+            </div>
+          </>
+        )}
+
+
+        {/* ── CBQoS & AMI 2.0 TAB ── */}
+        {activeTab === "cbqos" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>CBQoS & AMI 2.0 Network</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>
+                Class-Based Quality of Service managing AMI 2.0 meter data traffic — ensuring critical grid signals are always prioritized
+              </p>
+            </div>
+
+            <div style={{
+              ...styles.card, marginBottom: 24,
+              background: "linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.08))",
+              borderColor: "rgba(16,185,129,0.2)"
+            }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+                {[
+                  { icon: "📡", title: "Edge Intelligence", desc: "Meters act as edge computers, processing data locally in real-time" },
+                  { icon: "↔️", title: "Bidirectional Flow", desc: "Two-way energy management for solar, EVs and home batteries" },
+                  { icon: "🔗", title: "High-Freq Comms", desc: "NB-IoT / RF Mesh / 4G/5G near-instantaneous communication" },
+                  { icon: "🧠", title: "NILM AI", desc: "Appliance-level disaggregation from a single meter reading" },
+                ].map(f => (
+                  <div key={f.title} style={{ textAlign: "center", padding: "8px" }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>{f.icon}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#f1f5f9", marginBottom: 4 }}>{f.title}</div>
+                    <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>{f.desc}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={styles.grid4}>
+              <StatCard icon="🔴" label="Critical Traffic" value="55 req/s" sub="Last gasp · Grid alerts" accent="#ef4444" />
+              <StatCard icon="🟡" label="High Priority" value="134 req/s" sub="Theft · Demand response" accent="#f59e0b" />
+              <StatCard icon="🟢" label="Standard Traffic" value="720 req/s" sub="Billing · Firmware updates" accent="#10b981" />
+              <StatCard icon="📵" label="Silent Meters" value="1,118" sub="Not communicating now" accent="#8b5cf6" />
+            </div>
+
+            <SectionTitle>CBQoS Traffic Priority Classification (req/s)</SectionTitle>
+            <div style={{ ...styles.card, marginBottom: 24 }}>
+              <div style={{ display: "flex", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+                {[
+                  { color: "#ef4444", label: "Critical — Outage alerts, last-gasp, grid stability" },
+                  { color: "#f59e0b", label: "High — Theft anomalies, demand response" },
+                  { color: "#10b981", label: "Standard — Billing, usage reports, firmware" },
+                ].map(t => (
+                  <div key={t.label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+                    <span style={{ fontSize: 11, color: "#94a3b8" }}>{t.label}</span>
+                  </div>
+                ))}
+              </div>
+              <ResponsiveContainer width="100%" height={260}>
+                <AreaChart data={trafficData}>
+                  <defs>
+                    {[["critical","#ef4444"],["high","#f59e0b"],["standard","#10b981"]].map(([k,c]) => (
+                      <linearGradient key={k} id={"cg-" + k} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={c} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={c} stopOpacity={0} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="time" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                  <Area type="monotone" dataKey="critical" name="Critical" stroke="#ef4444" fill="url(#cg-critical)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="high" name="High Priority" stroke="#f59e0b" fill="url(#cg-high)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="standard" name="Standard" stroke="#10b981" fill="url(#cg-standard)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div style={styles.grid2}>
+              <div>
+                <SectionTitle>AT&C Loss by State</SectionTitle>
+                <div style={styles.card}>
+                  <div style={{ marginBottom: 12, fontSize: 12, color: "#64748b" }}>
+                    Aggregate Technical & Commercial loss = Energy supplied vs energy billed
+                  </div>
+                  {atcLossData.map((s, i) => {
+                    const colors = ["#10b981","#8b5cf6","#f59e0b","#ef4444"];
+                    const c = colors[i];
+                    return (
+                      <div key={s.state} style={{ marginBottom: 16 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, flexWrap: "wrap", gap: 4 }}>
+                          <span style={{ fontSize: 13, color: "#f1f5f9", fontWeight: 600 }}>{s.state}</span>
+                          <div style={{ display: "flex", gap: 12 }}>
+                            <span style={{ fontSize: 11, color: "#64748b" }}>Supplied: {s.supplied} MU</span>
+                            <span style={{ fontSize: 11, color: "#64748b" }}>Billed: {s.billed} MU</span>
+                            <span style={{ fontSize: 12, fontWeight: 800, color: s.loss > 20 ? "#ef4444" : "#f59e0b" }}>{s.loss}% loss</span>
+                          </div>
+                        </div>
+                        <ReadinessBar value={100 - s.loss} color={s.loss > 20 ? "#ef4444" : c} />
+                      </div>
+                    );
+                  })}
+                  <div style={{ marginTop: 16, padding: "12px", background: "rgba(16,185,129,0.06)", borderRadius: 10, border: "1px solid rgba(16,185,129,0.15)" }}>
+                    <div style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>EaaS Impact on AT&C</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Solar EaaS consumers reduce grid draw, directly lowering technical losses and improving AT&C metrics for DISCOMs</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <SectionTitle>Grid Reliability — SAIDI / SAIFI Trend</SectionTitle>
+                <div style={styles.card}>
+                  <div style={{ marginBottom: 12, fontSize: 12, color: "#64748b" }}>
+                    SAIDI = Avg outage duration (hrs/customer) · SAIFI = Avg outage frequency
+                  </div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <LineChart data={saidiData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="month" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                      <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                      <Line type="monotone" dataKey="saidi" name="SAIDI (hrs)" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} />
+                      <Line type="monotone" dataKey="saifi" name="SAIFI (count)" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(59,130,246,0.06)", borderRadius: 10, border: "1px solid rgba(59,130,246,0.15)" }}>
+                    <div style={{ fontSize: 12, color: "#3b82f6", fontWeight: 700 }}>📉 Improving trend</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>SAIDI reduced 28% over 5 months — faster outage detection via AMI 2.0 real-time alerts</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <SectionTitle>AMI 2.0 Communication Protocol Distribution</SectionTitle>
+            <div style={styles.card}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    {["State", "Total Meters", "NB-IoT", "RF Mesh", "PLC", "Silent", "Network Health"].map(h => (
+                      <th key={h} style={{ textAlign: "left", padding: "10px 14px", fontSize: 11, color: "#64748b", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {networkNodes.map((n) => {
+                    const health = (((n.total - n.silent) / n.total) * 100).toFixed(1);
+                    const healthColor = health > 95 ? "#10b981" : health > 90 ? "#f59e0b" : "#ef4444";
+                    return (
+                      <tr key={n.state} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <td style={{ padding: "14px", fontSize: 13, fontWeight: 700, color: "#f1f5f9" }}>{n.state}</td>
+                        <td style={{ padding: "14px", fontSize: 13, color: "#94a3b8", fontFamily: "'DM Mono', monospace" }}>{n.total.toLocaleString("en-IN")}</td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(59,130,246,0.15)", color: "#3b82f6", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.nbiot.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(16,185,129,0.15)", color: "#10b981", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.rfmesh.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(139,92,246,0.15)", color: "#8b5cf6", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.plc.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}><span style={{ background: "rgba(239,68,68,0.15)", color: "#ef4444", borderRadius: 6, padding: "3px 10px", fontSize: 12, fontWeight: 700 }}>{n.silent.toLocaleString("en-IN")}</span></td>
+                        <td style={{ padding: "14px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                            <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3 }}>
+                              <div style={{ width: health + "%", height: "100%", background: healthColor, borderRadius: 3 }} />
+                            </div>
+                            <span style={{ fontSize: 12, color: healthColor, fontWeight: 700, width: 42 }}>{health}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </>
         )}
