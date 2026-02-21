@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { QrCode, Smartphone } from 'lucide-react';
 
-const UPIPayment = ({ onPay }) => {
+const UPIPayment = ({ onPay, amount }) => {
   const [mode, setMode] = useState('apps'); // apps, qr, vpa
   const [vpa, setVpa] = useState('');
   const [error, setError] = useState('');
@@ -88,15 +88,21 @@ const UPIPayment = ({ onPay }) => {
       {/* QR Code */}
       {mode === 'qr' && (
         <div className="text-center py-4">
+          <p className="text-sm font-semibold text-gray-700 mb-3">
+            Scan to pay{' '}
+            <span className="text-green-700">
+              ₹{amount?.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+          </p>
           <div className="bg-white border-4 border-gray-200 rounded-lg p-4 inline-block mb-4">
             {/* Simulated QR Code Pattern */}
             <div className="w-40 h-40 bg-gradient-to-br from-gray-900 to-gray-700 rounded relative overflow-hidden">
               <div className="absolute inset-2 bg-white rounded">
                 <div className="grid grid-cols-7 gap-0.5 p-2 h-full">
-                  {Array(49).fill(0).map((_, i) => (
-                    <div 
-                      key={i} 
-                      className={`${Math.random() > 0.5 ? 'bg-gray-900' : 'bg-white'}`}
+                  {[1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,0,0,1,1,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,0,1,1,0,1,1,0,1,0,1].map((cell, i) => (
+                    <div
+                      key={i}
+                      className={cell ? 'bg-gray-900' : 'bg-white'}
                     />
                   ))}
                 </div>
@@ -112,11 +118,11 @@ const UPIPayment = ({ onPay }) => {
               </div>
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-2">Scan with any UPI app</p>
-          <p className="text-xs text-gray-400">QR expires in 5:00 minutes</p>
+          <p className="text-sm text-gray-600 mb-1">Scan with any UPI app</p>
+          <p className="text-xs text-gray-400 mb-4">QR expires in 5:00 minutes</p>
           <button 
             onClick={() => onPay({ type: 'qr' })}
-            className="mt-4 btn btn-primary w-full"
+            className="btn btn-primary w-full"
           >
             I've Scanned the QR
           </button>

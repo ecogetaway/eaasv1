@@ -15,7 +15,8 @@ const RazorpayMock = ({
   description, 
   onSuccess, 
   onFailure,
-  merchantName = 'EaaS Energy Services'
+  merchantName = 'EaaS Energy Services',
+  transactionId
 }) => {
   const [selectedMethod, setSelectedMethod] = useState('upi');
   const [paymentStage, setPaymentStage] = useState('select'); // select, processing, otp, success, failed
@@ -100,7 +101,7 @@ const RazorpayMock = ({
         );
       
       case 'success':
-        return <PaymentSuccess amount={amount} />;
+        return <PaymentSuccess amount={amount} paymentId={transactionId} />;
       
       case 'failed':
         return (
@@ -129,7 +130,7 @@ const RazorpayMock = ({
             
             <div className="mt-4">
               {selectedMethod === 'upi' && (
-                <UPIPayment onPay={(details) => handlePaymentInitiate('upi', details)} />
+                <UPIPayment amount={amount} onPay={(details) => handlePaymentInitiate('upi', details)} />
               )}
               {selectedMethod === 'card' && (
                 <CardPayment onPay={(details) => handlePaymentInitiate('card', details)} />
