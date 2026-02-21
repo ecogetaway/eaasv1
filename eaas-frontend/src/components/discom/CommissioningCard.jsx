@@ -1,4 +1,5 @@
 import { FileCheck, CheckCircle, Calendar, Lock, AlertCircle } from 'lucide-react';
+import { formatDate, formatDateTime } from '../../utils/formatters.js';
 
 const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
   if (!commissioning && !inspectionDocumentation) {
@@ -31,7 +32,7 @@ const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-600">Inspection Date</span>
                 <span className="text-sm font-medium">
-                  {new Date(inspectionDocumentation.inspection_date).toLocaleDateString()}
+                  {formatDate(inspectionDocumentation.inspection_date)}
                 </span>
               </div>
             )}
@@ -99,7 +100,7 @@ const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
                 </p>
                 {inspectionDocumentation.commissioning_certificate.issued_date && (
                   <p className="text-xs text-blue-700 mt-1">
-                    Issued: {new Date(inspectionDocumentation.commissioning_certificate.issued_date).toLocaleDateString()}
+                    Issued: {formatDate(inspectionDocumentation.commissioning_certificate.issued_date)}
                   </p>
                 )}
                 {inspectionDocumentation.commissioning_certificate.issued_by && (
@@ -137,7 +138,7 @@ const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-600">Commissioning Date</span>
                 <span className="text-sm font-medium">
-                  {new Date(commissioning.commissioning_date).toLocaleDateString()}
+                  {formatDate(commissioning.commissioning_date)}
                 </span>
               </div>
             )}
@@ -175,7 +176,7 @@ const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
                     <div className="flex justify-between">
                       <span className="text-blue-700">Sealed At:</span>
                       <span className="font-medium text-blue-900">
-                        {new Date(commissioning.meter_sealed_at).toLocaleString()}
+                        {formatDateTime(commissioning.meter_sealed_at)}
                       </span>
                     </div>
                   )}
@@ -191,7 +192,7 @@ const CommissioningCard = ({ commissioning, inspectionDocumentation }) => {
                   Billing Cycle
                 </p>
                 <p className="text-xs text-green-800">
-                  Billing cycle started: {new Date(commissioning.billing_cycle_start).toLocaleDateString()}
+                  Billing cycle started: {formatDate(commissioning.billing_cycle_start)}
                 </p>
                 <p className="text-xs text-green-700 mt-1">
                   Net metering is now active. You can export excess energy and earn credits.

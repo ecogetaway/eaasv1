@@ -1,4 +1,5 @@
 import { FileText, CheckCircle, Clock, AlertCircle, Upload } from 'lucide-react';
+import { formatDate } from '../../utils/formatters.js';
 
 const DocumentChecklist = ({ documents = [], showUploadButton = false }) => {
   const getStatusIcon = (status) => {
@@ -88,12 +89,12 @@ const DocumentChecklist = ({ documents = [], showUploadButton = false }) => {
                   
                   {doc.uploaded_at && (
                     <p className="text-xs opacity-60">
-                      Uploaded: {new Date(doc.uploaded_at).toLocaleDateString()}
+                      Uploaded: {formatDate(doc.uploaded_at)}
                     </p>
                   )}
                   {doc.verified_at && (
                     <p className="text-xs opacity-60">
-                      Verified: {new Date(doc.verified_at).toLocaleDateString()}
+                      Verified: {formatDate(doc.verified_at)}
                     </p>
                   )}
                 </div>

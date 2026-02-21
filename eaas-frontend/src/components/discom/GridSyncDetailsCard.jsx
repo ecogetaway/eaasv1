@@ -1,4 +1,5 @@
 import { Zap, CheckCircle, AlertCircle, Activity, Gauge } from 'lucide-react';
+import { formatDate, formatDateTime } from '../../utils/formatters.js';
 
 const GridSyncDetailsCard = ({ gridSync }) => {
   if (!gridSync) {
@@ -47,7 +48,7 @@ const GridSyncDetailsCard = ({ gridSync }) => {
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <span className="text-sm text-gray-600">Installation Date</span>
             <span className="text-sm font-medium">
-              {new Date(gridSync.installation_date).toLocaleDateString()}
+              {formatDate(gridSync.installation_date)}
             </span>
           </div>
         )}
@@ -56,7 +57,7 @@ const GridSyncDetailsCard = ({ gridSync }) => {
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <span className="text-sm text-gray-600">Synchronized At</span>
             <span className="text-sm font-medium">
-              {new Date(gridSync.synchronized_at).toLocaleString()}
+              {formatDateTime(gridSync.synchronized_at)}
             </span>
           </div>
         )}
@@ -107,7 +108,7 @@ const GridSyncDetailsCard = ({ gridSync }) => {
                 <div className="flex justify-between">
                   <span className="text-green-700">Test Date:</span>
                   <span className="font-medium text-green-600">
-                    {new Date(gridSync.anti_islanding_protection.test_date).toLocaleDateString()}
+                    {formatDate(gridSync.anti_islanding_protection.test_date)}
                   </span>
                 </div>
               )}
@@ -158,7 +159,7 @@ const GridSyncDetailsCard = ({ gridSync }) => {
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <span className="text-sm text-gray-600">Last Sync</span>
             <span className="text-sm font-medium">
-              {new Date(gridSync.last_sync_at).toLocaleString()}
+              {formatDateTime(gridSync.last_sync_at)}
             </span>
           </div>
         )}

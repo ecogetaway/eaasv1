@@ -9,11 +9,26 @@ import TechnicalDetailsCard from '../components/discom/TechnicalDetailsCard.jsx'
 import GridSyncDetailsCard from '../components/discom/GridSyncDetailsCard.jsx';
 import CommissioningCard from '../components/discom/CommissioningCard.jsx';
 import RealTimeConsumptionCard from '../components/discom/RealTimeConsumptionCard.jsx';
-import { 
-  FileText, Clock, CheckCircle, 
+import { formatDate, formatDateTime } from '../utils/formatters.js';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, LabelList
+} from 'recharts';
+import {
+  FileText, Clock, CheckCircle,
   Send, Building2, Zap,
-  RefreshCw, MapPin, Home, Info, Activity
+  RefreshCw, MapPin, Home, Info, Activity,
+  Download, Leaf, TrendingUp
 } from 'lucide-react';
+
+const GRID_EXPORT_DATA = [
+  { month: 'Jun', units: 110 },
+  { month: 'Jul', units: 125 },
+  { month: 'Aug', units: 140 },
+  { month: 'Sep', units: 138 },
+  { month: 'Oct', units: 120 },
+  { month: 'Nov', units: 127 },
+];
 
 const Discom = () => {
   const { user, isAuthenticated } = useAuth();
@@ -34,7 +49,7 @@ const Discom = () => {
   const loadStatus = async () => {
     const userId = user?.userId || user?.user_id;
     if (!userId) return;
-    
+
     try {
       setLoading(true);
       const data = await discomService.getApplicationStatus(userId);
@@ -52,6 +67,10 @@ const Discom = () => {
     setRefreshing(false);
   };
 
+  const handleDownloadCertificate = () => {
+    window.print();
+  };
+
   if (!isAuthenticated) return null;
 
   return (
@@ -65,14 +84,23 @@ const Discom = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">DISCOM Integration</h1>
               <p className="text-gray-600">Net-metering application and grid connection status</p>
             </div>
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="btn btn-outline flex items-center"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDownloadCertificate}
+                className="btn btn-outline flex items-center text-green-600 border-green-600 hover:bg-green-50"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Download Certificate
+              </button>
+              <button
+                onClick={handleRefresh}
+                disabled={refreshing}
+                className="btn btn-outline flex items-center"
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
           </div>
 
           {loading ? (
@@ -80,13 +108,13 @@ const Discom = () => {
               <LoadingSpinner size="lg" />
             </div>
           ) : statusData?.hasApplication ? (
-            <ApplicationStatus 
-              statusData={statusData} 
+            <ApplicationStatus
+              statusData={statusData}
               userId={user?.userId || user?.user_id}
             />
           ) : (
             showForm ? (
-              <ApplicationForm 
+              <ApplicationForm
                 userId={user?.userId || user?.user_id}
                 onSuccess={() => {
                   setShowForm(false);
@@ -113,10 +141,10 @@ const NoApplicationState = ({ onApply }) => {
       </div>
       <h2 className="text-2xl font-bold text-gray-900 mb-3">Apply for Net Metering</h2>
       <p className="text-gray-600 max-w-md mx-auto mb-6">
-        Submit your net-metering application to connect your solar system to the grid 
+        Submit your net-metering application to connect your solar system to the grid
         and start exporting excess energy.
       </p>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
         <div className="p-4 bg-gray-50 rounded-lg">
           <Clock className="w-6 h-6 text-primary-600 mx-auto mb-2" />
@@ -134,7 +162,7 @@ const NoApplicationState = ({ onApply }) => {
           <p className="text-xs text-gray-500">No processing fee</p>
         </div>
       </div>
-      
+
       <button onClick={onApply} className="btn btn-primary px-8">
         Start Application
       </button>
@@ -165,7 +193,7 @@ const ApplicationForm = ({ userId, onSuccess, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     if (!formData.solar_capacity_kw || !formData.property_address || !formData.consumer_number) {
       setError('Please fill in all required fields');
       return;
@@ -192,7 +220,7 @@ const ApplicationForm = ({ userId, onSuccess, onCancel }) => {
   return (
     <div className="card">
       <h2 className="text-xl font-bold mb-6">Net Metering Application</h2>
-      
+
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           {error}
@@ -366,7 +394,7 @@ const ApplicationForm = ({ userId, onSuccess, onCancel }) => {
         </div>
 
         {/* Required Documents */}
-        <DocumentChecklist 
+        <DocumentChecklist
           documents={[
             { id: 'identity_proof', name: 'Identity Proof', description: 'Aadhaar, PAN, or Driving License', status: 'required' },
             { id: 'property_ownership', name: 'Property Ownership Proof', description: 'Sale Deed, Property Tax Receipt, or NOC (for tenants)', status: 'required' },
@@ -383,7 +411,7 @@ const ApplicationForm = ({ userId, onSuccess, onCancel }) => {
             <div>
               <p className="text-sm text-blue-800 font-medium">Demo Mode</p>
               <p className="text-sm text-blue-700">
-                This is a simulated DISCOM application. The application will auto-progress through 
+                This is a simulated DISCOM application. The application will auto-progress through
                 approval stages every 30 seconds for demonstration purposes.
               </p>
             </div>
@@ -425,7 +453,7 @@ const ApplicationForm = ({ userId, onSuccess, onCancel }) => {
 // Application Status Component
 const ApplicationStatus = ({ statusData, userId }) => {
   const { application, timeline, currentStatusIndex, allStatuses, progressPercentage } = statusData;
-  
+
   const statusColors = {
     'submitted': 'bg-blue-500',
     'document_verification': 'bg-blue-500',
@@ -459,17 +487,17 @@ const ApplicationStatus = ({ statusData, userId }) => {
   };
 
   const isCompleted = application.status === 'grid_connected';
-  const isApproved = application.status === 'technical_approval' || 
+  const isApproved = application.status === 'technical_approval' ||
                      application.status === 'system_installation' ||
                      application.status === 'inspection_documentation' ||
                      application.status === 'meter_installation' ||
                      application.status === 'grid_synchronized' ||
                      application.status === 'commissioning_complete' ||
                      isCompleted;
-  
+
   // Show real-time consumption only when meters are active (grid_synchronized or later)
-  const showConsumptionTracking = application.status === 'grid_synchronized' || 
-                                    application.status === 'commissioning_complete' || 
+  const showConsumptionTracking = application.status === 'grid_synchronized' ||
+                                    application.status === 'commissioning_complete' ||
                                     application.status === 'grid_connected';
 
   return (
@@ -493,7 +521,7 @@ const ApplicationStatus = ({ statusData, userId }) => {
             <span className="font-medium">{progressPercentage}%</span>
           </div>
           <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-            <div 
+            <div
               className={`h-full transition-all duration-500 ${isCompleted ? 'bg-green-500' : 'bg-primary-500'}`}
               style={{ width: `${progressPercentage}%` }}
             />
@@ -504,7 +532,9 @@ const ApplicationStatus = ({ statusData, userId }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <p className="text-gray-500">Type</p>
-            <p className="font-medium capitalize">{application.application_type?.replace('_', ' ')}</p>
+            <p className="font-medium">
+              {application.application_type?.replace('_', ' ') || 'Net Metering — Solar Starter'}
+            </p>
           </div>
           <div>
             <p className="text-gray-500">Solar Capacity</p>
@@ -516,7 +546,7 @@ const ApplicationStatus = ({ statusData, userId }) => {
           </div>
           <div>
             <p className="text-gray-500">Submitted</p>
-            <p className="font-medium">{new Date(application.submitted_at || application.created_at).toLocaleDateString()}</p>
+            <p className="font-medium">{formatDate(application.submitted_at || application.created_at)}</p>
           </div>
         </div>
 
@@ -533,47 +563,100 @@ const ApplicationStatus = ({ statusData, userId }) => {
         )}
       </div>
 
+      {/* Stat Cards — shown when grid connected */}
+      {isCompleted && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-gray-500 font-medium">Net Metering Credits Earned</p>
+              <TrendingUp className="w-5 h-5 text-green-600" />
+            </div>
+            <p className="text-2xl font-bold text-green-600">₹3,420</p>
+            <p className="text-xs text-gray-400 mt-1">Since commissioning</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-gray-500 font-medium">Units Exported to Grid</p>
+              <Zap className="w-5 h-5 text-green-600" />
+            </div>
+            <p className="text-2xl font-bold text-green-600">760 kWh</p>
+            <p className="text-xs text-gray-400 mt-1">Total export recorded</p>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-sm p-5 border border-gray-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-gray-500 font-medium">CO₂ Offset via Export</p>
+              <Leaf className="w-5 h-5 text-green-600" />
+            </div>
+            <p className="text-2xl font-bold text-green-600">608 kg CO₂</p>
+            <p className="text-xs text-gray-400 mt-1">Carbon avoided</p>
+          </div>
+        </div>
+      )}
+
+      {/* Monthly Grid Export Chart — shown when grid connected */}
+      {isCompleted && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Grid Export (kWh)</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={GRID_EXPORT_DATA} margin={{ top: 24, right: 16, left: 0, bottom: 4 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#6b7280' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 12, fill: '#6b7280' }} axisLine={false} tickLine={false} width={36} />
+              <Tooltip
+                formatter={(value) => [`${value} kWh`, 'Export']}
+                contentStyle={{ borderRadius: '8px', border: '1px solid #e5e7eb', fontSize: '13px' }}
+              />
+              <Bar dataKey="units" fill="#16a34a" radius={[4, 4, 0, 0]}>
+                <LabelList dataKey="units" position="top" style={{ fontSize: '12px', fill: '#374151', fontWeight: 600 }} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
       {/* Timeline Card */}
       <div className="card">
         <h3 className="text-lg font-semibold mb-6">Application Timeline</h3>
-        
+
         <div className="relative">
           {/* Timeline Line */}
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
-          
+
           {/* Timeline Items */}
           <div className="space-y-6">
             {allStatuses.map((status, index) => {
-              const isCompleted = index <= currentStatusIndex;
+              const isStatusCompleted = index <= currentStatusIndex;
               const isCurrent = index === currentStatusIndex;
               const timelineEntry = timeline?.find(t => t.status === status);
-              
+
               return (
                 <div key={status} className="relative flex items-start pl-10">
                   {/* Status Icon */}
-                  <div className={`absolute left-0 w-8 h-8 rounded-full flex items-center justify-center border-2 
-                    ${isCompleted 
-                      ? `${statusColors[status]} border-transparent` 
+                  <div className={`absolute left-0 w-8 h-8 rounded-full flex items-center justify-center border-2
+                    ${isStatusCompleted
+                      ? `${statusColors[status]} border-transparent`
                       : 'bg-white border-gray-300'
                     }
                     ${isCurrent ? 'ring-4 ring-primary-100' : ''}
                   `}>
-                    {isCompleted ? (
+                    {isStatusCompleted ? (
                       <CheckCircle className="w-4 h-4 text-white" />
                     ) : (
                       <div className="w-2 h-2 bg-gray-300 rounded-full" />
                     )}
                   </div>
-                  
+
                   {/* Status Content */}
-                  <div className={`flex-1 ${!isCompleted ? 'opacity-50' : ''}`}>
+                  <div className={`flex-1 ${!isStatusCompleted ? 'opacity-50' : ''}`}>
                     <div className="flex items-center justify-between">
                       <p className={`font-medium ${isCurrent ? 'text-primary-600' : ''}`}>
                         {statusLabels[status]}
                       </p>
                       {timelineEntry && (
                         <span className="text-xs text-gray-500">
-                          {new Date(timelineEntry.timestamp).toLocaleString()}
+                          {formatDateTime(timelineEntry.timestamp)}
                         </span>
                       )}
                     </div>
@@ -590,14 +673,14 @@ const ApplicationStatus = ({ statusData, userId }) => {
 
       {/* Document Checklist */}
       {application.documents && application.documents.length > 0 && (
-        <DocumentChecklist 
-          documents={application.documents} 
+        <DocumentChecklist
+          documents={application.documents}
           showUploadButton={application.status === 'submitted' || application.status === 'document_verification'}
         />
       )}
 
       {/* Technical Details */}
-      <TechnicalDetailsCard 
+      <TechnicalDetailsCard
         technicalApproval={statusData.technical_approval}
         feasibilityStudy={statusData.feasibility_study}
         systemInstallation={statusData.system_installation}
@@ -607,7 +690,7 @@ const ApplicationStatus = ({ statusData, userId }) => {
       <GridSyncDetailsCard gridSync={statusData.grid_sync} />
 
       {/* Commissioning Details */}
-      <CommissioningCard 
+      <CommissioningCard
         commissioning={statusData.commissioning}
         inspectionDocumentation={statusData.inspection_documentation}
       />
@@ -702,7 +785,7 @@ const ApplicationStatus = ({ statusData, userId }) => {
           <div>
             <p className="text-sm text-blue-800 font-medium">Demo Mode Active</p>
             <p className="text-sm text-blue-700">
-              Your application will automatically progress through approval stages. 
+              Your application will automatically progress through approval stages.
               Use the refresh button to see the latest status.
             </p>
           </div>
@@ -713,4 +796,3 @@ const ApplicationStatus = ({ statusData, userId }) => {
 };
 
 export default Discom;
-

@@ -1,4 +1,5 @@
 import { FileCheck, CheckCircle, AlertCircle, Zap, Building2 } from 'lucide-react';
+import { formatDate } from '../../utils/formatters.js';
 
 const TechnicalDetailsCard = ({ technicalApproval, feasibilityStudy, systemInstallation }) => {
   if (!technicalApproval && !feasibilityStudy && !systemInstallation) {
@@ -31,7 +32,7 @@ const TechnicalDetailsCard = ({ technicalApproval, feasibilityStudy, systemInsta
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-600">Conducted On</span>
                 <span className="text-sm font-medium">
-                  {new Date(feasibilityStudy.conducted_at).toLocaleDateString()}
+                  {formatDate(feasibilityStudy.conducted_at)}
                 </span>
               </div>
             )}
@@ -129,7 +130,7 @@ const TechnicalDetailsCard = ({ technicalApproval, feasibilityStudy, systemInsta
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-600">Approval Date</span>
                 <span className="text-sm font-medium">
-                  {new Date(technicalApproval.approval_date).toLocaleDateString()}
+                  {formatDate(technicalApproval.approval_date)}
                 </span>
               </div>
             )}
@@ -189,7 +190,7 @@ const TechnicalDetailsCard = ({ technicalApproval, feasibilityStudy, systemInsta
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <span className="text-sm text-gray-600">Installation Date</span>
                 <span className="text-sm font-medium">
-                  {new Date(systemInstallation.installation_date).toLocaleDateString()}
+                  {formatDate(systemInstallation.installation_date)}
                 </span>
               </div>
             )}
