@@ -57,9 +57,9 @@ const PLANS = [
 ];
 
 const STATS = [
-  { value: '847', label: 'Homes Powered', icon: HomeIcon },
-  { value: '3.2 Lakh kg', label: 'CO₂ Saved', icon: Leaf },
-  { value: '₹2.4 Cr', label: 'Saved by Customers', icon: IndianRupee },
+  { value: '67,000', label: 'Homes Powered', icon: HomeIcon },
+  { value: '1.2 Cr kg', label: 'CO₂ Saved', icon: Leaf },
+  { value: '₹156 Cr', label: 'Saved by Customers', icon: IndianRupee },
 ];
 
 const HOW_IT_WORKS = [
