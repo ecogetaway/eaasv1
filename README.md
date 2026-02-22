@@ -1,248 +1,89 @@
-# ⚡ Energy-as-a-Service (EaaS) Platform
+# EaaS Plus v1 — Energy-as-a-Service Platform
 
-> A complete full-stack platform for managing solar energy subscriptions, real-time monitoring, billing, and support.
+A full-stack Energy-as-a-Service (EaaS) platform prototype built for the IntelliSmart hackathon. The platform consists of two parts:
 
-[![Test Coverage](https://img.shields.io/badge/tests-92%25%20passing-green)](./eaas-frontend/TEST-REPORT.md)
-[![Backend](https://img.shields.io/badge/backend-Node.js%20Express-blue)](./eaas-backend)
-[![Frontend](https://img.shields.io/badge/frontend-React%20Vite-blue)](./eaas-frontend)
-[![Database](https://img.shields.io/badge/database-PostgreSQL-blue)](./eaas-backend)
+1. **Consumer App** — [eaasv1.netlify.app](https://eaasv1.netlify.app) — for end consumers to subscribe to solar energy plans, track usage, manage billing, and interact with an AI energy advisor.
 
-## 🚀 Features
-
-### ✅ Core Features (Complete)
-- 🔐 **Authentication System** - JWT-based auth with registration, login, profile management
-- 📊 **Real-time Dashboard** - Live energy monitoring with WebSocket updates (5-second intervals)
-- 💰 **Subscription Management** - 3-step onboarding with plan selection and payment
-- 📄 **Billing & Invoicing** - Automated bill generation with PDF download
-- 🎫 **Support Tickets** - Complete ticket management system with comments and attachments
-- 🔔 **Notifications & Alerts** - Real-time notifications and system alerts
-- 📱 **Mobile Responsive** - Fully responsive design tested across 4 device sizes
-- 🧪 **Comprehensive Testing** - 57 E2E test cases with 92% pass rate
-
-### ⚠️ Partial Features
-- 🔌 **Smart Meters** - UI ready, backend API pending
-
-## 📁 Project Structure
-
-```
-eaas/
-├── eaas-backend/          # Node.js + Express API
-│   ├── src/
-│   │   ├── controllers/   # Request handlers
-│   │   ├── routes/        # API routes
-│   │   ├── services/      # Business logic
-│   │   ├── middleware/    # Auth, validation, error handling
-│   │   └── scripts/      # Database migrations & seeding
-│   └── package.json
-│
-├── eaas-frontend/         # React + Vite frontend
-│   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── pages/        # Page components
-│   │   ├── services/     # API services
-│   │   ├── context/      # React context providers
-│   │   └── hooks/        # Custom hooks
-│   ├── tests/e2e/        # Playwright E2E tests
-│   └── package.json
-│
-└── README.md             # This file
-```
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Runtime**: Node.js 18+ (ES Modules)
-- **Framework**: Express.js
-- **Database**: PostgreSQL 14+
-- **Cache**: Redis 6+
-- **Real-time**: Socket.io
-- **Authentication**: JWT
-- **PDF Generation**: PDFKit
-
-### Frontend
-- **Framework**: React 18
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **Routing**: React Router v6
-- **HTTP Client**: Axios
-- **Real-time**: Socket.io Client
-- **Icons**: Lucide React
-
-### Testing
-- **E2E Framework**: Playwright
-- **Test Coverage**: 57 test cases
-- **Pass Rate**: 92%
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- PostgreSQL 14+
-- Redis 6+ (optional, for caching)
-
-### Backend Setup
-
-```bash
-cd eaas-backend
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your database credentials
-
-# Create database
-createdb eaas_db
-
-# Run migrations
-npm run migrate
-
-# Seed demo data
-npm run seed
-
-# Start development server
-npm run dev
-```
-
-Backend runs on `http://localhost:5001`
-
-### Frontend Setup
-
-```bash
-cd eaas-frontend
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with backend API URL
-
-# Start development server
-npm run dev
-```
-
-Frontend runs on `http://localhost:5173`
-
-## 📊 Demo Credentials
-
-```
-Email: demo1@eaas.com
-Password: Demo@123
-```
-
-## 🧪 Running Tests
-
-```bash
-cd eaas-frontend
-
-# Install Playwright browsers
-npx playwright install
-
-# Run all E2E tests
-npm run test:e2e
-
-# Run tests with UI
-npm run test:e2e:ui
-
-# View test report
-npm run test:e2e:report
-```
-
-See [TEST-REPORT.md](./eaas-frontend/TEST-REPORT.md) for detailed test results.
-
-## 📚 Documentation
-
-- [Backend README](./eaas-backend/README.md) - Backend API documentation
-- [Frontend README](./eaas-frontend/README.md) - Frontend documentation
-- [Test Report](./eaas-frontend/TEST-REPORT.md) - Comprehensive test results
-- [Implementation Status](./IMPLEMENTATION-STATUS.md) - Feature completion status
-- [Testing Guide](./eaas-frontend/TESTING.md) - How to run tests
-
-## 🌐 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/profile` - Get user profile
-- `PUT /api/auth/profile` - Update profile
-- `PUT /api/auth/change-password` - Change password
-
-### Subscriptions
-- `GET /api/subscriptions/plans` - Get all plans
-- `GET /api/subscriptions/plans/:planId` - Get plan by ID
-- `GET /api/subscriptions/plans/recommend` - Get recommended plan
-- `POST /api/subscriptions` - Create subscription
-- `GET /api/subscriptions/user/:userId` - Get user subscriptions
-
-### Energy Data
-- `GET /api/energy/current/:userId` - Get current energy data
-- `GET /api/energy/history/:userId` - Get energy history
-- `GET /api/energy/dashboard/:userId` - Get dashboard summary
-- `WebSocket: ws://localhost:5001` - Real-time energy updates
-
-### Billing
-- `GET /api/bills/user/:userId` - Get user bills
-- `GET /api/bills/:billId` - Get bill details
-- `GET /api/bills/:billId/invoice` - Download invoice PDF
-- `POST /api/bills/:billId/pay` - Process payment
-
-### Support
-- `GET /api/tickets/user/:userId` - Get user tickets
-- `POST /api/tickets` - Create ticket
-- `GET /api/tickets/:ticketId` - Get ticket details
-- `POST /api/tickets/:ticketId/comments` - Add comment
-
-### Notifications & Alerts
-- `GET /api/notifications/user/:userId` - Get notifications
-- `GET /api/notifications/unread-count/:userId` - Get unread count
-- `PUT /api/notifications/:notificationId/read` - Mark as read
-- `GET /api/alerts/user/:userId` - Get alerts
-- `PUT /api/alerts/:alertId/acknowledge` - Acknowledge alert
-
-## 📈 Project Status
-
-**Demo Ready**: ✅ Yes  
-**Production Ready**: ⚠️ Needs enhancements
-
-### Completed Features (12/13)
-- ✅ Authentication System
-- ✅ Dashboard & Real-time Monitoring
-- ✅ Subscription Management
-- ✅ Billing & Invoicing
-- ✅ Support Tickets
-- ✅ Notifications & Alerts
-- ✅ Profile Management
-- ✅ Database & Backend API
-- ✅ IoT Data Simulator
-- ✅ Testing Suite
-- ✅ Mobile Responsive Design
-
-### Partial Features (1/13)
-- ⚠️ Smart Meters (UI ready, backend API pending)
-
-See [IMPLEMENTATION-STATUS.md](./IMPLEMENTATION-STATUS.md) for detailed status.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-ISC
-
-## 👥 Team
-
-**EcoGetaway** - Energy-as-a-Service Platform
+2. **IntelliSmart Admin Portal** — [eaasv1.netlify.app/admin](https://eaasv1.netlify.app/admin) — for IntelliSmart operators to manage EaaS rollout across their existing smart meter network across UP, Bihar, Assam, and Gujarat.
 
 ---
 
-**Repository**: https://github.com/ecogetaway/eaas  
-**Last Updated**: December 2024
+## Demo Credentials
 
+### Consumer App
+- **User 1:** demo@eaas.com / demo123
+- **User 2:** demo2@eaas.com / demo123
+
+### IntelliSmart Admin Portal
+- **Admin:** admin@intellismart.in / admin123
+
+---
+
+## Features
+
+### Consumer App
+- 🌞 Solar energy subscription plans (Basic Solar, Solar + Battery, Premium)
+- 📊 Real-time energy dashboard (solar generation, battery level, grid import/export)
+- 💳 Billing management with INR pricing
+- 🔗 DISCOM integration and net-metering tracker
+- 🤖 Lumi AI Advisor powered by Gemini 2.0
+- ⚙️ Subscription and settings management
+
+### IntelliSmart Admin Portal
+- 📊 Smart meter network overview across 4 states (22L+ meters)
+- ⚡ Demand forecasting and grid stress zone identification
+- 🚨 ML-powered anomaly and theft detection alerts
+- 💰 EaaS revenue opportunity calculator for DISCOMs
+- 🚀 State-wise deployment readiness scorecard
+- 🌐 CBQoS & AMI 2.0 network traffic monitoring with AT&C loss tracking and SAIDI/SAIFI metrics
+
+---
+
+## Tech Stack
+
+- **Frontend:** React, Vite, Tailwind CSS, Recharts
+- **Backend:** Node.js, Express (Railway deployment)
+- **AI:** Google Gemini 2.0 (Lumi AI Advisor)
+- **Deployment:** Netlify (frontend), Railway (backend)
+
+---
+
+## Acknowledgements & Inspiration
+
+The AI/ML features in the IntelliSmart Admin Portal are conceptually inspired by the following open source projects. The current prototype uses simulated data to demonstrate what these models would produce when connected to real IntelliSmart meter data from the Head End System (HES).
+
+| Feature | Inspired By | ML Approach |
+|---------|-------------|-------------|
+| Anomaly & Theft Detection | [vaishnavi-1/Electricity-theft-detection-using-ML](https://github.com/vaishnavi-1/Electricity-theft-detection-using-ML) | CNN-based abnormal consumption pattern detection on smart grid data |
+| Demand Forecasting | [kaymen99/AI-for-energy-sector](https://github.com/kaymen99/AI-for-energy-sector) | Deep Learning models for energy demand prediction using historical and weather data |
+| Grid Stress & Load Analysis | [Helmholtz-AI-Energy/electric-generation-forecasting](https://github.com/Helmholtz-AI-Energy/electric-generation-forecasting) | ML-based electric generation and load forecasting |
+| Solar Energy Prediction | [ColasGael/Machine-Learning-for-Solar-Energy-Prediction](https://github.com/ColasGael/Machine-Learning-for-Solar-Energy-Prediction) | Weather-based solar panel output prediction |
+| Energy AI Reference | [AI4Electricity/Awesome-AI-for-Electricity](https://github.com/AI4Electricity/Awesome-AI-for-Electricity) | Curated reference for AI/ML approaches in electric power systems |
+
+### Production Integration Plan
+When real meter data is available from IntelliSmart's HES/MDM system:
+- The **theft detection** CNN model would replace mock anomaly alerts with real flagged meters
+- The **demand forecasting** model would replace hardcoded demand curves with live predictions
+- The **solar prediction** model would power the EaaS eligibility scoring for each meter holder
+
+---
+
+## CBQoS & AMI 2.0
+
+The admin portal's CBQoS tab is based on concepts from IntelliSmart's AMI 2.0 infrastructure:
+- **Class-Based Quality of Service (CBQoS):** Prioritizes critical grid data (outage alerts, last-gasp signals) over routine billing traffic
+- **AT&C Loss Tracking:** Monitors Aggregate Technical & Commercial losses per DISCOM
+- **SAIDI/SAIFI Metrics:** Tracks grid reliability and outage frequency/duration trends
+- **Network Protocols:** NB-IoT, RF Mesh, and PLC communication protocol distribution
+
+---
+
+## About IntelliSmart
+
+[IntelliSmart Infra](https://www.intellismartinfra.in/) is India's leading smart metering and digital solutions provider, a joint venture of EESL and NIIF, focused on smart meter infrastructure and AI/ML-based analysis for power utilities across India.
+
+---
+
+## License
+
+MIT
