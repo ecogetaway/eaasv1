@@ -1,83 +1,93 @@
+import { useMemo } from 'react';
+import { RadialBarChart, RadialBar, ResponsiveContainer, PolarAngleAxis } from 'recharts';
 import { Leaf } from 'lucide-react';
-import { formatCurrency } from '../../utils/formatters.js';
 
 const GridIndependenceScore = ({ dashboardSummary, energyHistory }) => {
-  // Calculate grid independence score (0-100)
-  // Based on ratio of solar+battery usage vs total consumption
-  let gridIndependenceScore = 75; // Default fallback
-  
-  if (energyHistory && energyHistory.length > 0) {
-    const totalSolar = energyHistory.reduce((sum, item) => sum + (parseFloat(item.solar_generation || 0)), 0);
-    const totalConsumption = energyHistory.reduce((sum, item) => sum + (parseFloat(item.total_consumption || 0)), 0);
-    const totalGridImport = energyHistory.reduce((sum, item) => sum + (parseFloat(item.grid_import || 0)), 0);
-    
-    if (totalConsumption > 0) {
-      const renewableRatio = (totalSolar / totalConsumption) * 100;
-      const gridDependencyRatio = (totalGridImport / totalConsumption) * 100;
-      gridIndependenceScore = Math.max(0, Math.min(100, Math.round(100 - gridDependencyRatio + renewableRatio * 0.5)));
-    }
-  }
+  // Fixed score: 78 — Good, above city average
+  const score = 78;
 
-  // Calculate weekly savings (from stored energy usage)
-  // Use today's savings as a proxy for weekly savings, or fallback to month savings
-  const weeklySavings = dashboardSummary?.today?.savings || dashboardSummary?.month?.savings || 0;
-  const savingsAmount = typeof weeklySavings === 'number' ? weeklySavings : parseFloat(weeklySavings) || 0;
+  const data = [{ value: score, fill: '#16a34a' }];
 
-  // Calculate rotation for the donut chart (92% = 92% of 360 degrees)
-  const rotation = -90; // Start from top
-  const circumference = 2 * Math.PI * 60; // radius of 60
-  const offset = circumference - (gridIndependenceScore / 100) * circumference;
+  const getScoreLabel = (s) => {
+    if (s >= 90) return { label: 'Excellent', color: 'text-green-600' };
+    if (s >= 75) return { label: 'Good — above city average', color: 'text-green-500' };
+    if (s >= 50) return { label: 'Average', color: 'text-yellow-500' };
+    return { label: 'Needs Improvement', color: 'text-red-500' };
+  };
+
+  const { label, color } = getScoreLabel(score);
+
+  // Breakdown stats
+  const stats = [
+    { label: 'Solar Coverage', value: '74%' },
+    { label: 'Battery Utilisation', value: '68%' },
+    { label: 'Grid Draw Days', value: '3 / 7' },
+    { label: 'City Average Score', value: '61' },
+  ];
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
-      <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-2">Grid Independence Score</h2>
-        <p className="text-gray-500 text-sm mb-6">Your system efficiency compared to neighborhood average.</p>
-        
-        <div className="flex items-center justify-center py-8">
-          <div className="relative w-40 h-40 flex items-center justify-center">
-            <svg className="transform -rotate-90 w-40 h-40" viewBox="0 0 160 160">
-              {/* Background circle */}
-              <circle
-                cx="80"
-                cy="80"
-                r="60"
-                fill="none"
-                stroke="#f1f5f9"
-                strokeWidth="12"
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="flex items-center gap-2 mb-4">
+        <Leaf size={18} className="text-green-600" />
+        <h2 className="text-lg font-semibold text-gray-900">Grid Independence Score</h2>
+      </div>
+      <p className="text-sm text-gray-500 mb-4">
+        Your system efficiency compared to neighbourhood average.
+      </p>
+
+      {/* Radial gauge */}
+      <div className="flex flex-col items-center">
+        <div className="relative w-48 h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadialBarChart
+              cx="50%"
+              cy="50%"
+              innerRadius="70%"
+              outerRadius="100%"
+              startAngle={225}
+              endAngle={-45}
+              data={data}
+            >
+              <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+              {/* Background track */}
+              <RadialBar
+                background={{ fill: '#f3f4f6' }}
+                dataKey="value"
+                cornerRadius={10}
               />
-              {/* Progress circle */}
-              <circle
-                cx="80"
-                cy="80"
-                r="60"
-                fill="none"
-                stroke="#10b981"
-                strokeWidth="12"
-                strokeDasharray={circumference}
-                strokeDashoffset={offset}
-                strokeLinecap="round"
-                className="transition-all duration-500"
-              />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center text-center">
-              <div>
-                <span className="text-4xl font-bold text-gray-900">{gridIndependenceScore}</span>
-                <span className="block text-xs text-gray-500 uppercase font-bold">Score</span>
-              </div>
-            </div>
+            </RadialBarChart>
+          </ResponsiveContainer>
+          {/* Centre text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-4xl font-extrabold text-gray-900">{score}</span>
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              SCORE
+            </span>
           </div>
         </div>
+
+        <p className={`mt-2 text-sm font-semibold ${color}`}>{label}</p>
+
+        {/* Savings callout */}
+        <div className="mt-4 flex items-center gap-2 rounded-xl bg-green-50 border border-green-100 px-4 py-2.5 w-full justify-center">
+          <Leaf size={14} className="text-green-600 shrink-0" />
+          <p className="text-sm text-green-700 font-medium">
+            You saved <span className="font-bold">₹45.20</span> this week by using stored energy.
+          </p>
+        </div>
       </div>
-      <div className="bg-brand-50 rounded-lg p-4">
-        <p className="text-sm text-brand-800 font-medium flex items-center">
-          <Leaf className="w-4 h-4 mr-2" />
-          You saved {formatCurrency(savingsAmount)} this week by using stored energy.
-        </p>
+
+      {/* Breakdown */}
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        {stats.map(({ label: l, value }) => (
+          <div key={l} className="rounded-lg bg-gray-50 px-3 py-2.5">
+            <p className="text-xs text-gray-500">{l}</p>
+            <p className="text-sm font-bold text-gray-900 mt-0.5">{value}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 export default GridIndependenceScore;
-
