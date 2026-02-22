@@ -1,19 +1,24 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { supportService } from '../../services/supportService.js';
-import { formatDate, getTimeAgo } from '../../utils/formatters.js';
-import { STATUS_COLORS, PRIORITY_COLORS } from '../../utils/constants.js';
+import { formatDate } from '../../utils/formatters.js';
+import { STATUS_COLORS, PRIORITY_COLORS, TICKET_CATEGORY_LABELS, ESTIMATED_RESOLUTION_TIME } from '../../utils/constants.js';
 import { cn } from '../../utils/cn.js';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import { MessageSquare, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
-const TicketList = ({ userId, statusFilter = 'all' }) => {
+const getStatusLabel = (status) => {
+  if (status === 'in_progress') return 'In Progress';
+  return status ? status.charAt(0).toUpperCase() + status.slice(1) : '';
+};
+
+const TicketList = ({ userId, statusFilter = 'all', refreshKey = 0 }) => {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadTickets();
-  }, [userId, statusFilter]);
+  }, [userId, statusFilter, refreshKey]);
 
   const loadTickets = async () => {
     try {
@@ -65,13 +70,13 @@ const TicketList = ({ userId, statusFilter = 'all' }) => {
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <div className="flex items-center space-x-3 mb-2">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
                 <span className="text-sm font-mono text-gray-500">
-                  #{ticket.ticket_id.substring(0, 8)}
+                  #{String(ticket.ticket_id).startsWith('TKT-') ? ticket.ticket_id : ticket.ticket_id.substring(0, 8)}
                 </span>
                 <span className={cn('badge flex items-center space-x-1', STATUS_COLORS[ticket.status])}>
                   {getStatusIcon(ticket.status)}
-                  <span>{ticket.status}</span>
+                  <span>{getStatusLabel(ticket.status)}</span>
                 </span>
                 <span className={cn('badge', PRIORITY_COLORS[ticket.priority])}>
                   {ticket.priority}
@@ -79,11 +84,14 @@ const TicketList = ({ userId, statusFilter = 'all' }) => {
               </div>
               <h3 className="text-lg font-semibold mb-2">{ticket.subject}</h3>
               <p className="text-sm text-gray-600 mb-3 line-clamp-2">{ticket.description}</p>
-              <div className="flex items-center space-x-4 text-xs text-gray-500">
-                <span>Category: {ticket.category}</span>
-                <span>Created: {getTimeAgo(ticket.created_at)}</span>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                <span>Category: {TICKET_CATEGORY_LABELS[ticket.category] || ticket.category}</span>
+                <span>Created: {formatDate(ticket.created_at)}</span>
                 {ticket.assigned_to && (
                   <span>Assigned to: {ticket.assigned_to}</span>
+                )}
+                {(ESTIMATED_RESOLUTION_TIME[ticket.category] || ESTIMATED_RESOLUTION_TIME.other) && (
+                  <span>Est. resolution: {ESTIMATED_RESOLUTION_TIME[ticket.category] || ESTIMATED_RESOLUTION_TIME.other}</span>
                 )}
               </div>
             </div>

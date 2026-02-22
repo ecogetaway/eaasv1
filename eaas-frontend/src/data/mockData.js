@@ -322,9 +322,9 @@ export const mockMeters = [
 
 export const mockTickets = [
   {
-    ticket_id: 'ticket_001',
+    ticket_id: 'TKT-001',
     user_id: 'user_123',
-    category: 'technical',
+    category: 'solar_performance',
     priority: 'high',
     status: 'resolved',
     subject: 'Solar panel not generating power',
@@ -335,9 +335,9 @@ export const mockTickets = [
     resolved_at: '2024-11-21T14:30:00Z'
   },
   {
-    ticket_id: 'ticket_002',
+    ticket_id: 'TKT-002',
     user_id: 'user_123',
-    category: 'billing',
+    category: 'billing_query',
     priority: 'medium',
     status: 'in_progress',
     subject: 'Billing query - Unexpected charges',
@@ -345,6 +345,45 @@ export const mockTickets = [
     assigned_to: 'Support Agent 2',
     created_at: '2024-11-25T09:00:00Z',
     updated_at: '2024-11-26T11:00:00Z',
+    resolved_at: null
+  },
+  {
+    ticket_id: 'TKT-003',
+    user_id: 'user_123',
+    category: 'power_outage',
+    priority: 'high',
+    status: 'open',
+    subject: 'Complete power outage - no backup',
+    description: 'Experiencing total power cut. Battery backup did not kick in. Property in Bengaluru.',
+    assigned_to: null,
+    created_at: '2024-11-28T06:30:00Z',
+    updated_at: '2024-11-28T06:30:00Z',
+    resolved_at: null
+  },
+  {
+    ticket_id: 'TKT-004',
+    user_id: 'user_123',
+    category: 'battery_issue',
+    priority: 'medium',
+    status: 'in_progress',
+    subject: 'Battery not holding charge',
+    description: 'My 5kWh battery drains faster than expected. Lasts only 2 hours during load shedding.',
+    assigned_to: 'Support Agent 1',
+    created_at: '2024-11-22T14:00:00Z',
+    updated_at: '2024-11-23T10:00:00Z',
+    resolved_at: null
+  },
+  {
+    ticket_id: 'TKT-005',
+    user_id: 'user_123',
+    category: 'installation',
+    priority: 'low',
+    status: 'open',
+    subject: 'Installation date confirmation - Pune',
+    description: 'Need to confirm my scheduled installation for 05 Dec 2024. Can someone call back?',
+    assigned_to: null,
+    created_at: '2024-11-27T11:00:00Z',
+    updated_at: '2024-11-27T11:00:00Z',
     resolved_at: null
   }
 ];

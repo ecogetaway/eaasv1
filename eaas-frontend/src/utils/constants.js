@@ -22,10 +22,30 @@ export const TICKET_PRIORITY = {
 };
 
 export const TICKET_CATEGORY = {
-  TECHNICAL: 'technical',
-  BILLING: 'billing',
+  POWER_OUTAGE: 'power_outage',
+  SOLAR_PERFORMANCE: 'solar_performance',
+  BATTERY_ISSUE: 'battery_issue',
+  BILLING_QUERY: 'billing_query',
   INSTALLATION: 'installation',
-  GENERAL: 'general',
+  OTHER: 'other',
+};
+
+export const TICKET_CATEGORY_LABELS = {
+  power_outage: 'Power Outage',
+  solar_performance: 'Solar Performance',
+  battery_issue: 'Battery Issue',
+  billing_query: 'Billing Query',
+  installation: 'Installation',
+  other: 'Other',
+};
+
+export const ESTIMATED_RESOLUTION_TIME = {
+  power_outage: '4 hrs',
+  solar_performance: '24 hrs',
+  battery_issue: '24 hrs',
+  billing_query: '2 business days',
+  installation: '3 business days',
+  other: '2 business days',
 };
 
 export const STATUS_COLORS = {

@@ -8,10 +8,15 @@ export const supportService = {
   createTicket: async (ticketData) => {
     if (USE_MOCK_DATA) {
       await new Promise(resolve => setTimeout(resolve, 600));
+      const maxNum = mockTickets.reduce((max, t) => {
+        const match = String(t.ticket_id).match(/TKT-(\d+)/i);
+        return match ? Math.max(max, parseInt(match[1], 10)) : max;
+      }, 0);
+      const nextId = `TKT-${String(maxNum + 1).padStart(3, '0')}`;
       const newTicket = {
-        ticket_id: `ticket_${Date.now()}`,
+        ticket_id: nextId,
         user_id: ticketData.user_id || 'user_123',
-        category: ticketData.category || 'general',
+        category: ticketData.category || 'other',
         priority: ticketData.priority || 'medium',
         status: 'open',
         subject: ticketData.subject,
@@ -21,7 +26,7 @@ export const supportService = {
         updated_at: new Date().toISOString(),
         resolved_at: null
       };
-      mockTickets.unshift(newTicket); // Add to beginning
+      mockTickets.unshift(newTicket);
       return { ticket: newTicket };
     }
     
@@ -30,8 +35,12 @@ export const supportService = {
       return response.data;
     } catch (error) {
       console.warn('Using mock ticket creation');
+      const maxNum = mockTickets.reduce((max, t) => {
+        const match = String(t.ticket_id).match(/TKT-(\d+)/i);
+        return match ? Math.max(max, parseInt(match[1], 10)) : max;
+      }, 0);
       const newTicket = {
-        ticket_id: `ticket_${Date.now()}`,
+        ticket_id: `TKT-${String(maxNum + 1).padStart(3, '0')}`,
         ...ticketData,
         status: 'open',
         created_at: new Date().toISOString()

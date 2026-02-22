@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supportService } from '../../services/supportService.js';
-import { formatDateTime, getTimeAgo } from '../../utils/formatters.js';
-import { STATUS_COLORS, PRIORITY_COLORS } from '../../utils/constants.js';
+import { formatDate, formatDateTime, getTimeAgo } from '../../utils/formatters.js';
+
+const getStatusLabel = (status) => {
+  if (status === 'in_progress') return 'In Progress';
+  return status ? status.charAt(0).toUpperCase() + status.slice(1) : '';
+};
+import { STATUS_COLORS, PRIORITY_COLORS, TICKET_CATEGORY_LABELS, ESTIMATED_RESOLUTION_TIME } from '../../utils/constants.js';
 import { cn } from '../../utils/cn.js';
 import LoadingSpinner from '../common/LoadingSpinner.jsx';
 import { ArrowLeft, Send, User, HeadphonesIcon } from 'lucide-react';
@@ -81,12 +86,12 @@ const TicketDetail = () => {
       <div className="card mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="flex items-center space-x-3 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="text-sm font-mono text-gray-500">
-                #{ticket.ticket_id.substring(0, 8)}
+                #{String(ticket.ticket_id).startsWith('TKT-') ? ticket.ticket_id : ticket.ticket_id.substring(0, 8)}
               </span>
               <span className={cn('badge', STATUS_COLORS[ticket.status])}>
-                {ticket.status}
+                {getStatusLabel(ticket.status)}
               </span>
               <span className={cn('badge', PRIORITY_COLORS[ticket.priority])}>
                 {ticket.priority}
@@ -100,7 +105,7 @@ const TicketDetail = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
           <div>
             <div className="text-gray-600">Category</div>
-            <div className="font-semibold">{ticket.category}</div>
+            <div className="font-semibold">{TICKET_CATEGORY_LABELS[ticket.category] || ticket.category}</div>
           </div>
           <div>
             <div className="text-gray-600">Priority</div>
@@ -108,7 +113,7 @@ const TicketDetail = () => {
           </div>
           <div>
             <div className="text-gray-600">Created</div>
-            <div className="font-semibold">{getTimeAgo(ticket.created_at)}</div>
+            <div className="font-semibold">{formatDate(ticket.created_at)}</div>
           </div>
           {ticket.assigned_to && (
             <div>
@@ -118,10 +123,10 @@ const TicketDetail = () => {
           )}
         </div>
 
-        {ticket.status !== 'resolved' && (
+        {ticket.status !== 'resolved' && (ESTIMATED_RESOLUTION_TIME[ticket.category] || ESTIMATED_RESOLUTION_TIME.other) && (
           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-sm text-yellow-800">
-              Expected resolution in 18 hours
+              Estimated resolution: {ESTIMATED_RESOLUTION_TIME[ticket.category] || ESTIMATED_RESOLUTION_TIME.other}
             </p>
           </div>
         )}
