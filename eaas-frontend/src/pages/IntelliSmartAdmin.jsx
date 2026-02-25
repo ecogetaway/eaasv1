@@ -12,6 +12,69 @@ const STATES = [
   { id: "gujarat", name: "Gujarat", meters: 6_75_000, active: 6_52_000, eligible: 1_80_000, revenue: 0, color: "#8b5cf6" },
 ];
 
+const consumerIndexData = [
+  {
+    state: "Uttar Pradesh",
+    id: "up",
+    color: "#10b981",
+    gisMapping: 78,
+    dtMapping: 71,
+    loadProfile: 83,
+    indexScore: 77,
+    totalConsumers: 842000,
+    indexed: 654000,
+    unverified: 188000,
+    status: "Partial",
+    mlModel: "Isolation Forest + GraphSAGE",
+    insight: "21% consumers have unverified DT mapping — priority zone for AI/ML re-indexing",
+  },
+  {
+    state: "Gujarat",
+    id: "gujarat",
+    color: "#8b5cf6",
+    gisMapping: 94,
+    dtMapping: 91,
+    loadProfile: 92,
+    indexScore: 92,
+    totalConsumers: 675000,
+    indexed: 621000,
+    unverified: 54000,
+    status: "Healthy",
+    mlModel: "DBSCAN Clustering + TabNet",
+    insight: "Strongest index health across all states — supports 10.2% AT&C loss performance",
+  },
+  {
+    state: "Bihar",
+    id: "bihar",
+    color: "#3b82f6",
+    gisMapping: 61,
+    dtMapping: 54,
+    loadProfile: 67,
+    indexScore: 61,
+    totalConsumers: 510000,
+    indexed: 311000,
+    unverified: 199000,
+    status: "Critical",
+    mlModel: "Isolation Forest",
+    insight: "39% consumers unverified — primary driver of 26.6% AT&C loss. Urgent re-indexing needed.",
+  },
+  {
+    state: "Assam",
+    id: "assam",
+    color: "#f59e0b",
+    gisMapping: 55,
+    dtMapping: 49,
+    loadProfile: 58,
+    indexScore: 54,
+    totalConsumers: 230000,
+    indexed: 124000,
+    unverified: 106000,
+    status: "Critical",
+    mlModel: "HDBSCAN + Isolation Forest",
+    insight: "46% consumers unverified — rural coverage gaps. Geographic clustering needed.",
+  },
+];
+
 const demandData = [
   { time: "12am", up: 420, bihar: 310, assam: 180, gujarat: 390 },
   { time: "3am",  up: 310, bihar: 240, assam: 130, gujarat: 280 },
@@ -128,8 +191,7 @@ function ReadinessBar({ value, color = "#10b981" }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
       <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 3, overflow: "hidden" }}>
-        <div style={{ width: `${value}%`, height: "100%", background: color, borderRadius: 3,
-          transition: "width 1s ease" }} />
+        <div style={{ width: `${value}%`, height: "100%", background: color, borderRadius: 3, transition: "width 1s ease" }} />
       </div>
       <span style={{ fontSize: 12, color: "#94a3b8", width: 28, textAlign: "right" }}>{value}%</span>
     </div>
@@ -158,14 +220,12 @@ function LoginScreen({ onLogin }) {
         width: 420, background: "rgba(255,255,255,0.03)",
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 24, padding: 48
       }}>
-        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
             <div style={{
               width: 40, height: 40, borderRadius: 10,
               background: "linear-gradient(135deg, #10b981, #3b82f6)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 20
+              display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20
             }}>⚡</div>
             <div>
               <div style={{ fontSize: 18, fontWeight: 800, color: "#f1f5f9", letterSpacing: -0.5 }}>IntelliSmart</div>
@@ -177,7 +237,6 @@ function LoginScreen({ onLogin }) {
           </p>
         </div>
 
-        {/* Form */}
         {[
           { label: "Email", val: email, set: setEmail, type: "email" },
           { label: "Password", val: pass, set: setPass, type: "password" }
@@ -236,11 +295,11 @@ export default function IntelliSmartAdmin() {
 
   const tabs = [
     { id: "overview", label: "📊 Overview" },
-    { id: "demand", label: "⚡ Demand & Grid" },
     { id: "theft", label: "🚨 Anomaly Alerts" },
+    { id: "cbqos", label: "🌐 CBQoS & AMI 2.0" },
     { id: "opportunity", label: "💰 Revenue Opportunity" },
     { id: "readiness", label: "🚀 Deployment Readiness" },
-    { id: "cbqos", label: "🌐 CBQoS & AMI 2.0" },
+    { id: "demand", label: "⚡ Demand & Grid" },
   ];
 
   const styles = {
@@ -280,7 +339,6 @@ export default function IntelliSmartAdmin() {
 
   return (
     <div style={styles.root}>
-      {/* Google Fonts */}
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap');
       * { box-sizing: border-box; }
       ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #060d1a; } ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
@@ -319,6 +377,7 @@ export default function IntelliSmartAdmin() {
               </p>
             </div>
 
+            {/* KPI Cards */}
             <div style={styles.grid4}>
               <StatCard icon="🔌" label="Total Meters Deployed" value={totalMeters.toLocaleString("en-IN")} sub="Across 4 states" accent="#10b981" />
               <StatCard icon="✅" label="Active Meters" value={totalActive.toLocaleString("en-IN")} sub={`${((totalActive/totalMeters)*100).toFixed(1)}% uptime`} accent="#3b82f6" />
@@ -326,6 +385,7 @@ export default function IntelliSmartAdmin() {
               <StatCard icon="🚨" label="Anomaly Alerts Today" value="47" sub="₹2.3L potential recovery" accent="#ef4444" />
             </div>
 
+            {/* State-wise Meter Distribution */}
             <SectionTitle>State-wise Meter Distribution</SectionTitle>
             <div style={styles.grid2}>
               {STATES.map(s => (
@@ -363,80 +423,125 @@ export default function IntelliSmartAdmin() {
                 </div>
               ))}
             </div>
-          </>
-        )}
 
-        {/* ── DEMAND & GRID TAB ── */}
-        {activeTab === "demand" && (
-          <>
-            <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>Demand Forecasting & Grid Health</h1>
-              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>Real-time demand patterns from smart meter data — identifying zones for EaaS prioritization</p>
-            </div>
+            {/* ── Consumer Indexing Health Panel ── */}
+            <SectionTitle>Consumer Indexing Health — AI/ML Assisted</SectionTitle>
 
-            <div style={styles.grid4}>
-              <StatCard icon="📈" label="Peak Demand Today" value="1,020 MW" sub="Uttar Pradesh · 6PM" accent="#f59e0b" />
-              <StatCard icon="🔮" label="Tomorrow's Forecast" value="1,148 MW" sub="+12.5% above avg" accent="#ef4444" />
-              <StatCard icon="☀️" label="Solar Offset Potential" value="23%" sub="If EaaS adopted at 5%" accent="#10b981" />
-              <StatCard icon="⚡" label="Grid Stress Zones" value="7 Zones" sub="Critical load areas" accent="#8b5cf6" />
-            </div>
-
-            <SectionTitle>24-Hour Demand Pattern by State (MW)</SectionTitle>
-            <div style={{ ...styles.card, marginBottom: 24 }}>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={demandData}>
-                  <defs>
-                    {STATES.map(s => (
-                      <linearGradient key={s.id} id={`g-${s.id}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={s.color} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={s.color} stopOpacity={0} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="time" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
-                  <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
-                  {STATES.map(s => (
-                    <Area key={s.id} type="monotone" dataKey={s.id} name={s.name.split(" ")[0]}
-                      stroke={s.color} fill={`url(#g-${s.id})`} strokeWidth={2} />
-                  ))}
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            <SectionTitle>High-Demand Zones — Priority for EaaS Solar Rollout</SectionTitle>
-            <div style={styles.grid2}>
+            {/* Summary bar */}
+            <div style={{
+              ...styles.card,
+              marginBottom: 20,
+              background: "linear-gradient(135deg, rgba(16,185,129,0.06), rgba(59,130,246,0.06))",
+              borderColor: "rgba(16,185,129,0.2)",
+              display: "grid",
+              gridTemplateColumns: "repeat(4,1fr)",
+              gap: 16,
+            }}>
               {[
-                { zone: "Lucknow Metro", state: "UP", load: 94, priority: "Critical", potential: "₹4.2Cr/yr" },
-                { zone: "Surat Industrial", state: "Gujarat", load: 89, priority: "Critical", potential: "₹3.8Cr/yr" },
-                { zone: "Patna East", state: "Bihar", load: 78, priority: "High", potential: "₹2.1Cr/yr" },
-                { zone: "Guwahati Central", state: "Assam", load: 72, priority: "High", potential: "₹1.6Cr/yr" },
-              ].map(z => (
-                <div key={z.zone} style={styles.card}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9" }}>{z.zone}</div>
-                      <div style={{ fontSize: 12, color: "#64748b" }}>{z.state}</div>
-                    </div>
-                    <RiskBadge level={z.priority === "Critical" ? "High" : "Medium"} />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: "#94a3b8" }}>Grid Load</span>
-                    <span style={{ fontSize: 12, color: z.load > 85 ? "#ef4444" : "#f59e0b", fontWeight: 700 }}>{z.load}%</span>
-                  </div>
-                  <ReadinessBar value={z.load} color={z.load > 85 ? "#ef4444" : "#f59e0b"} />
-                  <div style={{ marginTop: 12, fontSize: 13, color: "#10b981", fontWeight: 700 }}>
-                    EaaS Revenue Potential: {z.potential}
-                  </div>
+                { label: "Total Consumers", value: "22,57,000", color: "#f1f5f9", sub: "Across 4 states" },
+                { label: "Verified & Indexed", value: "17,10,000", color: "#10b981", sub: "75.8% index coverage" },
+                { label: "Unverified / At Risk", value: "5,47,000", color: "#ef4444", sub: "Require AI/ML re-indexing" },
+                { label: "Avg Index Health", value: "71%", color: "#f59e0b", sub: "Weighted across states" },
+              ].map(m => (
+                <div key={m.label} style={{ textAlign: "center", padding: "8px 0" }}>
+                  <div style={{ fontSize: 26, fontWeight: 800, color: m.color, fontFamily: "'DM Mono', monospace" }}>{m.value}</div>
+                  <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 0.8, marginTop: 4 }}>{m.label}</div>
+                  <div style={{ fontSize: 11, color: m.color, marginTop: 2 }}>{m.sub}</div>
                 </div>
               ))}
             </div>
+
+            {/* Per-state indexing cards */}
+            <div style={styles.grid2}>
+              {consumerIndexData.map(s => {
+                const statusColors = { Healthy: "#10b981", Partial: "#f59e0b", Critical: "#ef4444" };
+                const sc = statusColors[s.status];
+                return (
+                  <div key={s.id} style={{ ...styles.card, borderTop: `2px solid ${s.color}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9" }}>{s.state}</div>
+                        <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>
+                          {s.indexed.toLocaleString("en-IN")} indexed · {s.unverified.toLocaleString("en-IN")} unverified
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                        <div style={{ fontSize: 24, fontWeight: 800, color: s.color, fontFamily: "'DM Mono', monospace" }}>{s.indexScore}%</div>
+                        <span style={{
+                          background: sc + "22", color: sc,
+                          border: `1px solid ${sc}44`,
+                          borderRadius: 6, padding: "2px 10px", fontSize: 11, fontWeight: 700
+                        }}>{s.status}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 14 }}>
+                      {[
+                        { label: "GIS Mapping", value: s.gisMapping },
+                        { label: "DT Mapping Accuracy", value: s.dtMapping },
+                        { label: "Load Profile Accuracy", value: s.loadProfile },
+                      ].map(m => (
+                        <div key={m.label}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                            <span style={{ fontSize: 12, color: "#94a3b8" }}>{m.label}</span>
+                            <span style={{ fontSize: 12, color: m.value < 65 ? "#ef4444" : m.value < 80 ? "#f59e0b" : "#10b981", fontWeight: 700 }}>{m.value}%</span>
+                          </div>
+                          <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3 }}>
+                            <div style={{
+                              width: `${m.value}%`, height: "100%", borderRadius: 3,
+                              background: m.value < 65 ? "#ef4444" : m.value < 80 ? "#f59e0b" : "#10b981"
+                            }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginBottom: 10 }}>
+                      <span style={{ fontSize: 10, color: "#64748b", textTransform: "uppercase", letterSpacing: 0.8 }}>AI/ML Model: </span>
+                      <span style={{ fontSize: 11, color: "#8b5cf6", fontWeight: 700 }}>{s.mlModel}</span>
+                    </div>
+
+                    <div style={{
+                      padding: "8px 12px",
+                      background: sc === "#ef4444" ? "rgba(239,68,68,0.06)" : sc === "#f59e0b" ? "rgba(245,158,11,0.06)" : "rgba(16,185,129,0.06)",
+                      borderRadius: 8,
+                      border: `1px solid ${sc}22`
+                    }}>
+                      <div style={{ fontSize: 11, color: sc, fontWeight: 700, marginBottom: 2 }}>
+                        {s.status === "Critical" ? "⚠️ Action Required" : s.status === "Partial" ? "🔄 In Progress" : "✅ On Track"}
+                      </div>
+                      <div style={{ fontSize: 11, color: "#94a3b8", lineHeight: 1.5 }}>{s.insight}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Foundation note */}
+            <div style={{
+              marginTop: 4,
+              padding: "14px 18px",
+              background: "rgba(139,92,246,0.06)",
+              border: "1px solid rgba(139,92,246,0.2)",
+              borderRadius: 12,
+            }}>
+              <div style={{ fontSize: 12, color: "#8b5cf6", fontWeight: 700, marginBottom: 4 }}>
+                🧠 AI/ML-Driven Consumer Indexing — The Foundation Layer
+              </div>
+              <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.7 }}>
+                Consumer indexing with DT and feeder mapping is part of IntelliSmart's AMISP contract scope.
+                This portal assumes AI/ML-driven indexing is in place — using{" "}
+                <strong style={{ color: "#8b5cf6" }}>GraphSAGE</strong> for feeder topology validation,{" "}
+                <strong style={{ color: "#8b5cf6" }}>DBSCAN</strong> for pattern-based consumer clustering, and{" "}
+                <strong style={{ color: "#8b5cf6" }}>Isolation Forest</strong> for DT mismatch detection.
+                Index health directly explains AT&C loss variation across states — Gujarat's 92% index score
+                correlates with its 10.2% AT&C loss, while Bihar's 61% index score drives its 26.6% loss.
+              </div>
+            </div>
           </>
         )}
 
-        {/* ── THEFT ALERTS TAB ── */}
+        {/* ── ANOMALY ALERTS TAB ── */}
         {activeTab === "theft" && (
           <>
             <div style={{ marginBottom: 28 }}>
@@ -504,146 +609,7 @@ export default function IntelliSmartAdmin() {
           </>
         )}
 
-        {/* ── REVENUE OPPORTUNITY TAB ── */}
-        {activeTab === "opportunity" && (
-          <>
-            <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>EaaS Revenue Opportunity</h1>
-              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>Projected additional revenue for DISCOMs by converting meter holders to EaaS subscribers</p>
-            </div>
-
-            <div style={{ ...styles.card, marginBottom: 24, borderColor: "rgba(16,185,129,0.2)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>Revenue Calculator</div>
-                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Adjust EaaS adoption rate across eligible meter holders</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 32, fontWeight: 800, color: "#10b981", fontFamily: "'DM Mono', monospace" }}>₹{projectedRevenue}L</div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>projected monthly revenue</div>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 13, color: "#94a3b8" }}>Adoption Rate</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'DM Mono', monospace" }}>{conversionRate}%</span>
-                </div>
-                <input type="range" min={1} max={30} value={conversionRate}
-                  onChange={e => setConversionRate(+e.target.value)}
-                  style={{ width: "100%", accentColor: "#10b981", cursor: "pointer" }} />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-                  <span style={{ fontSize: 11, color: "#475569" }}>1% (Conservative)</span>
-                  <span style={{ fontSize: 11, color: "#475569" }}>30% (Aggressive)</span>
-                </div>
-              </div>
-
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
-                {[
-                  { l: "EaaS Subscribers", v: projectedSubscribers.toLocaleString("en-IN"), c: "#3b82f6" },
-                  { l: "Monthly Revenue", v: `₹${projectedRevenue}L`, c: "#10b981" },
-                  { l: "Annual Revenue", v: `₹${(projectedRevenue * 12).toFixed(0)}L`, c: "#f59e0b" },
-                ].map(m => (
-                  <div key={m.l} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "16px", textAlign: "center" }}>
-                    <div style={{ fontSize: 24, fontWeight: 800, color: m.c, fontFamily: "'DM Mono', monospace" }}>{m.v}</div>
-                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>{m.l}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <SectionTitle>Adoption Growth Forecast (24 Months)</SectionTitle>
-            <div style={styles.card}>
-              <ResponsiveContainer width="100%" height={280}>
-                <LineChart data={adoptionForecast}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                  <XAxis dataKey="month" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <YAxis yAxisId="left" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <YAxis yAxisId="right" orientation="right" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
-                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
-                  <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
-                  <Line yAxisId="left" type="monotone" dataKey="subscribers" name="Subscribers" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} />
-                  <Line yAxisId="right" type="monotone" dataKey="revenue" name="Revenue (₹L)" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </>
-        )}
-
-        {/* ── DEPLOYMENT READINESS TAB ── */}
-        {activeTab === "readiness" && (
-          <>
-            <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>EaaS Deployment Readiness</h1>
-              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>State-by-state readiness assessment for EaaS rollout based on existing infrastructure</p>
-            </div>
-
-            <div style={styles.grid4}>
-              <StatCard icon="🥇" label="Most Ready State" value="Gujarat" sub="91% readiness score" accent="#10b981" />
-              <StatCard icon="📅" label="Fastest Rollout" value="45 Days" sub="Gujarat pilot estimate" accent="#3b82f6" />
-              <StatCard icon="🏗️" label="Infra Upgrades Needed" value="Bihar · Assam" sub="Grid stability work req." accent="#f59e0b" />
-              <StatCard icon="🎯" label="Recommended Start" value="Gujarat → UP" sub="Phased rollout plan" accent="#8b5cf6" />
-            </div>
-
-            <SectionTitle>Readiness Scorecard by State</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
-              {deploymentReadiness.map((s, i) => {
-                const colors = ["#10b981", "#8b5cf6", "#3b82f6", "#f59e0b"];
-                const c = colors[i];
-                return (
-                  <div key={s.state} style={{ ...styles.card, borderLeft: `3px solid ${c}` }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>{s.state}</div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ fontSize: 28, fontWeight: 800, color: c, fontFamily: "'DM Mono', monospace" }}>{s.overall}%</div>
-                        <div style={{ fontSize: 11, color: "#64748b" }}>Overall</div>
-                      </div>
-                    </div>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-                      {[
-                        { l: "Infrastructure", v: s.infra },
-                        { l: "Data Quality", v: s.dataQuality },
-                        { l: "Grid Stability", v: s.gridStability },
-                      ].map(m => (
-                        <div key={m.l}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                            <span style={{ fontSize: 12, color: "#94a3b8" }}>{m.l}</span>
-                          </div>
-                          <ReadinessBar value={m.v} color={c} />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <SectionTitle>Recommended Rollout Phases</SectionTitle>
-            <div style={styles.grid2}>
-              {[
-                { phase: "Phase 1", timeline: "Month 1–3", state: "Gujarat", desc: "Highest readiness. Start with Surat industrial zones. Target 15,000 subscribers.", color: "#10b981" },
-                { phase: "Phase 2", timeline: "Month 3–6", state: "Uttar Pradesh", desc: "Largest meter base. Focus on Lucknow, Kanpur metros. Target 40,000 subscribers.", color: "#3b82f6" },
-                { phase: "Phase 3", timeline: "Month 6–12", state: "Bihar", desc: "Parallel infra upgrades. Patna East as pilot zone. Target 20,000 subscribers.", color: "#f59e0b" },
-                { phase: "Phase 4", timeline: "Month 9–15", state: "Assam", desc: "Grid stability improvements required first. Guwahati pilot. Target 10,000 subscribers.", color: "#8b5cf6" },
-              ].map(p => (
-                <div key={p.phase} style={{ ...styles.card, borderTop: `2px solid ${p.color}` }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
-                    <div>
-                      <div style={{ fontSize: 13, fontWeight: 800, color: p.color, letterSpacing: 1, textTransform: "uppercase" }}>{p.phase}</div>
-                      <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9", marginTop: 2 }}>{p.state}</div>
-                    </div>
-                    <span style={{ background: p.color + "22", color: p.color, border: `1px solid ${p.color}44`, borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700 }}>
-                      {p.timeline}
-                    </span>
-                  </div>
-                  <p style={{ margin: 0, fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>{p.desc}</p>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-
-        {/* ── CBQoS & AMI 2.0 TAB ── */}
+        {/* ── CBQOS & AMI 2.0 TAB ── */}
         {activeTab === "cbqos" && (
           <>
             <div style={{ marginBottom: 28 }}>
@@ -807,6 +773,215 @@ export default function IntelliSmartAdmin() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </>
+        )}
+
+        {/* ── REVENUE OPPORTUNITY TAB ── */}
+        {activeTab === "opportunity" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>EaaS Revenue Opportunity</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>Projected additional revenue for DISCOMs by converting meter holders to EaaS subscribers</p>
+            </div>
+
+            <div style={{ ...styles.card, marginBottom: 24, borderColor: "rgba(16,185,129,0.2)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>Revenue Calculator</div>
+                  <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>Adjust EaaS adoption rate across eligible meter holders</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 32, fontWeight: 800, color: "#10b981", fontFamily: "'DM Mono', monospace" }}>₹{projectedRevenue}L</div>
+                  <div style={{ fontSize: 11, color: "#64748b" }}>projected monthly revenue</div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, color: "#94a3b8" }}>Adoption Rate</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color: "#f59e0b", fontFamily: "'DM Mono', monospace" }}>{conversionRate}%</span>
+                </div>
+                <input type="range" min={1} max={30} value={conversionRate}
+                  onChange={e => setConversionRate(+e.target.value)}
+                  style={{ width: "100%", accentColor: "#10b981", cursor: "pointer" }} />
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                  <span style={{ fontSize: 11, color: "#475569" }}>1% (Conservative)</span>
+                  <span style={{ fontSize: 11, color: "#475569" }}>30% (Aggressive)</span>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+                {[
+                  { l: "EaaS Subscribers", v: projectedSubscribers.toLocaleString("en-IN"), c: "#3b82f6" },
+                  { l: "Monthly Revenue", v: `₹${projectedRevenue}L`, c: "#10b981" },
+                  { l: "Annual Revenue", v: `₹${(projectedRevenue * 12).toFixed(0)}L`, c: "#f59e0b" },
+                ].map(m => (
+                  <div key={m.l} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 12, padding: "16px", textAlign: "center" }}>
+                    <div style={{ fontSize: 24, fontWeight: 800, color: m.c, fontFamily: "'DM Mono', monospace" }}>{m.v}</div>
+                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 4 }}>{m.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <SectionTitle>Adoption Growth Forecast (24 Months)</SectionTitle>
+            <div style={styles.card}>
+              <ResponsiveContainer width="100%" height={280}>
+                <LineChart data={adoptionForecast}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="month" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <YAxis yAxisId="left" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <YAxis yAxisId="right" orientation="right" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                  <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                  <Line yAxisId="left" type="monotone" dataKey="subscribers" name="Subscribers" stroke="#3b82f6" strokeWidth={2} dot={{ fill: "#3b82f6", r: 4 }} />
+                  <Line yAxisId="right" type="monotone" dataKey="revenue" name="Revenue (₹L)" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </>
+        )}
+
+        {/* ── DEPLOYMENT READINESS TAB ── */}
+        {activeTab === "readiness" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>EaaS Deployment Readiness</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>State-by-state readiness assessment for EaaS rollout based on existing infrastructure</p>
+            </div>
+
+            <div style={styles.grid4}>
+              <StatCard icon="🥇" label="Most Ready State" value="Gujarat" sub="91% readiness score" accent="#10b981" />
+              <StatCard icon="📅" label="Fastest Rollout" value="45 Days" sub="Gujarat pilot estimate" accent="#3b82f6" />
+              <StatCard icon="🏗️" label="Infra Upgrades Needed" value="Bihar · Assam" sub="Grid stability work req." accent="#f59e0b" />
+              <StatCard icon="🎯" label="Recommended Start" value="Gujarat → UP" sub="Phased rollout plan" accent="#8b5cf6" />
+            </div>
+
+            <SectionTitle>Readiness Scorecard by State</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+              {deploymentReadiness.map((s, i) => {
+                const colors = ["#10b981", "#8b5cf6", "#3b82f6", "#f59e0b"];
+                const c = colors[i];
+                return (
+                  <div key={s.state} style={{ ...styles.card, borderLeft: `3px solid ${c}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>{s.state}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ fontSize: 28, fontWeight: 800, color: c, fontFamily: "'DM Mono', monospace" }}>{s.overall}%</div>
+                        <div style={{ fontSize: 11, color: "#64748b" }}>Overall</div>
+                      </div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+                      {[
+                        { l: "Infrastructure", v: s.infra },
+                        { l: "Data Quality", v: s.dataQuality },
+                        { l: "Grid Stability", v: s.gridStability },
+                      ].map(m => (
+                        <div key={m.l}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                            <span style={{ fontSize: 12, color: "#94a3b8" }}>{m.l}</span>
+                          </div>
+                          <ReadinessBar value={m.v} color={c} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <SectionTitle>Recommended Rollout Phases</SectionTitle>
+            <div style={styles.grid2}>
+              {[
+                { phase: "Phase 1", timeline: "Month 1–3", state: "Gujarat", desc: "Highest readiness. Start with Surat industrial zones. Target 15,000 subscribers.", color: "#10b981" },
+                { phase: "Phase 2", timeline: "Month 3–6", state: "Uttar Pradesh", desc: "Largest meter base. Focus on Lucknow, Kanpur metros. Target 40,000 subscribers.", color: "#3b82f6" },
+                { phase: "Phase 3", timeline: "Month 6–12", state: "Bihar", desc: "Parallel infra upgrades. Patna East as pilot zone. Target 20,000 subscribers.", color: "#f59e0b" },
+                { phase: "Phase 4", timeline: "Month 9–15", state: "Assam", desc: "Grid stability improvements required first. Guwahati pilot. Target 10,000 subscribers.", color: "#8b5cf6" },
+              ].map(p => (
+                <div key={p.phase} style={{ ...styles.card, borderTop: `2px solid ${p.color}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: p.color, letterSpacing: 1, textTransform: "uppercase" }}>{p.phase}</div>
+                      <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9", marginTop: 2 }}>{p.state}</div>
+                    </div>
+                    <span style={{ background: p.color + "22", color: p.color, border: `1px solid ${p.color}44`, borderRadius: 8, padding: "4px 10px", fontSize: 11, fontWeight: 700 }}>
+                      {p.timeline}
+                    </span>
+                  </div>
+                  <p style={{ margin: 0, fontSize: 13, color: "#94a3b8", lineHeight: 1.6 }}>{p.desc}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ── DEMAND & GRID TAB ── */}
+        {activeTab === "demand" && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>Demand Forecasting & Grid Health</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>Real-time demand patterns from smart meter data — identifying zones for EaaS prioritization</p>
+            </div>
+
+            <div style={styles.grid4}>
+              <StatCard icon="📈" label="Peak Demand Today" value="1,020 MW" sub="Uttar Pradesh · 6PM" accent="#f59e0b" />
+              <StatCard icon="🔮" label="Tomorrow's Forecast" value="1,148 MW" sub="+12.5% above avg" accent="#ef4444" />
+              <StatCard icon="☀️" label="Solar Offset Potential" value="23%" sub="If EaaS adopted at 5%" accent="#10b981" />
+              <StatCard icon="⚡" label="Grid Stress Zones" value="7 Zones" sub="Critical load areas" accent="#8b5cf6" />
+            </div>
+
+            <SectionTitle>24-Hour Demand Pattern by State (MW)</SectionTitle>
+            <div style={{ ...styles.card, marginBottom: 24 }}>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={demandData}>
+                  <defs>
+                    {STATES.map(s => (
+                      <linearGradient key={s.id} id={`g-${s.id}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={s.color} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={s.color} stopOpacity={0} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="time" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                  <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }} />
+                  <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                  {STATES.map(s => (
+                    <Area key={s.id} type="monotone" dataKey={s.id} name={s.name.split(" ")[0]}
+                      stroke={s.color} fill={`url(#g-${s.id})`} strokeWidth={2} />
+                  ))}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <SectionTitle>High-Demand Zones — Priority for EaaS Solar Rollout</SectionTitle>
+            <div style={styles.grid2}>
+              {[
+                { zone: "Lucknow Metro", state: "UP", load: 94, priority: "Critical", potential: "₹4.2Cr/yr" },
+                { zone: "Surat Industrial", state: "Gujarat", load: 89, priority: "Critical", potential: "₹3.8Cr/yr" },
+                { zone: "Patna East", state: "Bihar", load: 78, priority: "High", potential: "₹2.1Cr/yr" },
+                { zone: "Guwahati Central", state: "Assam", load: 72, priority: "High", potential: "₹1.6Cr/yr" },
+              ].map(z => (
+                <div key={z.zone} style={styles.card}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9" }}>{z.zone}</div>
+                      <div style={{ fontSize: 12, color: "#64748b" }}>{z.state}</div>
+                    </div>
+                    <RiskBadge level={z.priority === "Critical" ? "High" : "Medium"} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                    <span style={{ fontSize: 12, color: "#94a3b8" }}>Grid Load</span>
+                    <span style={{ fontSize: 12, color: z.load > 85 ? "#ef4444" : "#f59e0b", fontWeight: 700 }}>{z.load}%</span>
+                  </div>
+                  <ReadinessBar value={z.load} color={z.load > 85 ? "#ef4444" : "#f59e0b"} />
+                  <div style={{ marginTop: 12, fontSize: 13, color: "#10b981", fontWeight: 700 }}>
+                    EaaS Revenue Potential: {z.potential}
+                  </div>
+                </div>
+              ))}
             </div>
           </>
         )}
