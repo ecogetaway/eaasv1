@@ -86,6 +86,21 @@ const demandData = [
   { time: "9pm",  up: 780, bihar: 590, assam: 320, gujarat: 730 },
 ];
 
+const drEvents = [
+  { id: "DR-UP-001", zone: "Lucknow Metro", state: "UP", type: "Peak Shaving", status: "Active", consumers: 4200, reduction: "18 MW", saving: "₹2.1L", duration: "6PM–9PM" },
+  { id: "DR-GJ-002", zone: "Surat Industrial", state: "Gujarat", type: "Load Shift", status: "Active", consumers: 3800, reduction: "14 MW", saving: "₹1.8L", duration: "5PM–8PM" },
+  { id: "DR-BR-003", zone: "Patna East", state: "Bihar", type: "Peak Shaving", status: "Scheduled", consumers: 2100, reduction: "9 MW", saving: "₹0.9L", duration: "7PM–10PM" },
+  { id: "DR-AS-004", zone: "Guwahati Central", state: "Assam", type: "Voluntary Curtail", status: "Completed", consumers: 1400, reduction: "6 MW", saving: "₹0.6L", duration: "4PM–7PM" },
+];
+
+const drSavingsData = [
+  { month: "Sep", peakReduction: 28, consumers: 6200, savings: 3.8 },
+  { month: "Oct", peakReduction: 34, consumers: 7800, savings: 4.6 },
+  { month: "Nov", peakReduction: 41, consumers: 9400, savings: 5.9 },
+  { month: "Dec", peakReduction: 38, consumers: 8900, savings: 5.2 },
+  { month: "Jan", peakReduction: 47, consumers: 11500, savings: 6.5 },
+];
+
 const theftAlerts = [
   { id: "MTR-UP-448821", state: "UP", zone: "Lucknow North", anomaly: "302% above baseline", risk: "High", est: "₹12,400/mo" },
   { id: "MTR-BR-221043", state: "Bihar", zone: "Patna East", anomaly: "245% above baseline", risk: "High", est: "₹9,800/mo" },
@@ -299,7 +314,7 @@ export default function IntelliSmartAdmin() {
     { id: "cbqos", label: "🌐 CBQoS & AMI 2.0" },
     { id: "opportunity", label: "💰 Revenue Opportunity" },
     { id: "readiness", label: "🚀 Deployment Readiness" },
-    { id: "demand", label: "⚡ Demand & Grid" },
+    { id: "demand", label: "⚡ Demand & Response" },
   ];
 
   const styles = {
@@ -920,10 +935,13 @@ export default function IntelliSmartAdmin() {
         {activeTab === "demand" && (
           <>
             <div style={{ marginBottom: 28 }}>
-              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>Demand Forecasting & Grid Health</h1>
-              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>Real-time demand patterns from smart meter data — identifying zones for EaaS prioritization</p>
+              <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#f1f5f9" }}>Demand Forecasting & Response</h1>
+              <p style={{ margin: "6px 0 0", color: "#64748b", fontSize: 13 }}>
+                Real-time demand patterns from smart meter data — with active Demand Response programmes to balance grid load
+              </p>
             </div>
 
+            {/* KPI Cards */}
             <div style={styles.grid4}>
               <StatCard icon="📈" label="Peak Demand Today" value="1,020 MW" sub="Uttar Pradesh · 6PM" accent="#f59e0b" />
               <StatCard icon="🔮" label="Tomorrow's Forecast" value="1,148 MW" sub="+12.5% above avg" accent="#ef4444" />
@@ -931,9 +949,10 @@ export default function IntelliSmartAdmin() {
               <StatCard icon="⚡" label="Grid Stress Zones" value="7 Zones" sub="Critical load areas" accent="#8b5cf6" />
             </div>
 
+            {/* Demand Forecasting Chart */}
             <SectionTitle>24-Hour Demand Pattern by State (MW)</SectionTitle>
             <div style={{ ...styles.card, marginBottom: 24 }}>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={280}>
                 <AreaChart data={demandData}>
                   <defs>
                     {STATES.map(s => (
@@ -956,32 +975,125 @@ export default function IntelliSmartAdmin() {
               </ResponsiveContainer>
             </div>
 
-            <SectionTitle>High-Demand Zones — Priority for EaaS Solar Rollout</SectionTitle>
+            {/* ── DEMAND RESPONSE SECTION ── */}
+            <div style={{
+              padding: "14px 18px", marginBottom: 20,
+              background: "linear-gradient(135deg, rgba(16,185,129,0.06), rgba(139,92,246,0.06))",
+              border: "1px solid rgba(16,185,129,0.2)", borderRadius: 12,
+            }}>
+              <div style={{ fontSize: 13, color: "#10b981", fontWeight: 700, marginBottom: 4 }}>
+                ⚡ Demand Response — Active Programme
+              </div>
+              <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.7 }}>
+                IntelliSmart is actively scouting Demand Response opportunities — incentivising consumers to shift consumption away from peak hours to balance grid supply and demand.
+                Smart meter data enables precise, zone-level DR events without manual intervention. EaaS subscribers are natural DR participants — their solar generation directly offsets peak grid draw.
+              </div>
+            </div>
+
+            {/* DR Summary KPIs */}
+            <div style={styles.grid4}>
+              <StatCard icon="🎯" label="Active DR Events" value="2" sub="Lucknow · Surat live now" accent="#10b981" />
+              <StatCard icon="👥" label="Participating Consumers" value="11,500" sub="Across 4 states this month" accent="#3b82f6" />
+              <StatCard icon="📉" label="Peak Reduction Today" value="47 MW" sub="Vs baseline demand" accent="#8b5cf6" />
+              <StatCard icon="💰" label="Grid Cost Saving" value="₹6.5L" sub="January DR programme" accent="#f59e0b" />
+            </div>
+
+            {/* Active DR Events Table */}
+            <SectionTitle>Active & Scheduled Demand Response Events</SectionTitle>
+            <div style={{ ...styles.card, marginBottom: 24 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr>
+                    {["Event ID", "Zone", "State", "Type", "Status", "Consumers", "Reduction", "Grid Saving", "Window"].map(h => (
+                      <th key={h} style={{ textAlign: "left", padding: "10px 12px", fontSize: 11, color: "#64748b", fontWeight: 700, letterSpacing: 0.5, textTransform: "uppercase", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {drEvents.map(e => {
+                    const statusColors = { Active: "#10b981", Scheduled: "#3b82f6", Completed: "#64748b" };
+                    const sc = statusColors[e.status];
+                    return (
+                      <tr key={e.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                        <td style={{ padding: "12px", fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#f1f5f9" }}>{e.id}</td>
+                        <td style={{ padding: "12px", fontSize: 13, color: "#94a3b8" }}>{e.zone}</td>
+                        <td style={{ padding: "12px", fontSize: 13, color: "#94a3b8" }}>{e.state}</td>
+                        <td style={{ padding: "12px", fontSize: 12, color: "#f59e0b" }}>{e.type}</td>
+                        <td style={{ padding: "12px" }}>
+                          <span style={{ background: sc + "22", color: sc, border: `1px solid ${sc}44`, borderRadius: 6, padding: "2px 10px", fontSize: 11, fontWeight: 700 }}>{e.status}</span>
+                        </td>
+                        <td style={{ padding: "12px", fontSize: 13, color: "#f1f5f9", fontWeight: 600 }}>{e.consumers.toLocaleString("en-IN")}</td>
+                        <td style={{ padding: "12px", fontSize: 13, color: "#8b5cf6", fontWeight: 700 }}>{e.reduction}</td>
+                        <td style={{ padding: "12px", fontSize: 13, color: "#10b981", fontWeight: 700 }}>{e.saving}</td>
+                        <td style={{ padding: "12px", fontSize: 12, color: "#64748b" }}>{e.duration}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* DR Trend + High Demand Zones side by side */}
             <div style={styles.grid2}>
-              {[
-                { zone: "Lucknow Metro", state: "UP", load: 94, priority: "Critical", potential: "₹4.2Cr/yr" },
-                { zone: "Surat Industrial", state: "Gujarat", load: 89, priority: "Critical", potential: "₹3.8Cr/yr" },
-                { zone: "Patna East", state: "Bihar", load: 78, priority: "High", potential: "₹2.1Cr/yr" },
-                { zone: "Guwahati Central", state: "Assam", load: 72, priority: "High", potential: "₹1.6Cr/yr" },
-              ].map(z => (
-                <div key={z.zone} style={styles.card}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                    <div>
-                      <div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9" }}>{z.zone}</div>
-                      <div style={{ fontSize: 12, color: "#64748b" }}>{z.state}</div>
-                    </div>
-                    <RiskBadge level={z.priority === "Critical" ? "High" : "Medium"} />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <span style={{ fontSize: 12, color: "#94a3b8" }}>Grid Load</span>
-                    <span style={{ fontSize: 12, color: z.load > 85 ? "#ef4444" : "#f59e0b", fontWeight: 700 }}>{z.load}%</span>
-                  </div>
-                  <ReadinessBar value={z.load} color={z.load > 85 ? "#ef4444" : "#f59e0b"} />
-                  <div style={{ marginTop: 12, fontSize: 13, color: "#10b981", fontWeight: 700 }}>
-                    EaaS Revenue Potential: {z.potential}
+              <div>
+                <SectionTitle>DR Programme Performance (5 Months)</SectionTitle>
+                <div style={styles.card}>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart data={drSavingsData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="month" stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <YAxis stroke="#475569" tick={{ fill: "#64748b", fontSize: 11 }} />
+                      <Tooltip contentStyle={{ background: "#0f1929", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#e2e8f0" }}
+                        formatter={(value, name) => [name === "savings" ? `₹${value}L` : `${value} MW`, name === "savings" ? "Grid Saving" : "Peak Reduction"]} />
+                      <Legend wrapperStyle={{ color: "#94a3b8", fontSize: 12 }} />
+                      <Bar dataKey="peakReduction" name="Peak Reduction (MW)" fill="#8b5cf6" radius={[4,4,0,0]} />
+                      <Bar dataKey="savings" name="Grid Saving (₹L)" fill="#10b981" radius={[4,4,0,0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                  <div style={{ marginTop: 12, padding: "10px 12px", background: "rgba(16,185,129,0.06)", borderRadius: 10, border: "1px solid rgba(16,185,129,0.15)" }}>
+                    <div style={{ fontSize: 12, color: "#10b981", fontWeight: 700 }}>📈 Growing participation</div>
+                    <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Peak reduction grew from 28 MW to 47 MW in 5 months — EaaS solar subscribers are natural DR participants</div>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              <div>
+                <SectionTitle>High-Demand Zones — DR Priority Areas</SectionTitle>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {[
+                    { zone: "Lucknow Metro", state: "UP", load: 94, potential: "₹4.2Cr/yr", drReady: true },
+                    { zone: "Surat Industrial", state: "Gujarat", load: 89, potential: "₹3.8Cr/yr", drReady: true },
+                    { zone: "Patna East", state: "Bihar", load: 78, potential: "₹2.1Cr/yr", drReady: false },
+                    { zone: "Guwahati Central", state: "Assam", load: 72, potential: "₹1.6Cr/yr", drReady: false },
+                  ].map(z => (
+                    <div key={z.zone} style={styles.card}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "#f1f5f9" }}>{z.zone}</div>
+                          <div style={{ fontSize: 11, color: "#64748b" }}>{z.state}</div>
+                        </div>
+                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                          <span style={{
+                            background: z.drReady ? "rgba(16,185,129,0.15)" : "rgba(100,116,139,0.15)",
+                            color: z.drReady ? "#10b981" : "#64748b",
+                            border: `1px solid ${z.drReady ? "rgba(16,185,129,0.3)" : "rgba(100,116,139,0.3)"}`,
+                            borderRadius: 6, padding: "2px 8px", fontSize: 10, fontWeight: 700
+                          }}>{z.drReady ? "DR Active" : "DR Eligible"}</span>
+                          <RiskBadge level={z.load > 85 ? "High" : "Medium"} />
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                        <span style={{ fontSize: 11, color: "#94a3b8" }}>Grid Load</span>
+                        <span style={{ fontSize: 11, color: z.load > 85 ? "#ef4444" : "#f59e0b", fontWeight: 700 }}>{z.load}%</span>
+                      </div>
+                      <ReadinessBar value={z.load} color={z.load > 85 ? "#ef4444" : "#f59e0b"} />
+                      <div style={{ marginTop: 8, fontSize: 12, color: "#10b981", fontWeight: 700 }}>
+                        EaaS + DR Potential: {z.potential}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </>
         )}
