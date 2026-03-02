@@ -1,0 +1,19 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - cd eaas-frontend
+        - node --version
+        - npm ci
+    build:
+      commands:
+        - cd eaas-frontend
+        - npm run build
+  artifacts:
+    baseDirectory: eaas-frontend/dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - eaas-frontend/node_modules/**/*
