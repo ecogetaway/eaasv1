@@ -1,5 +1,6 @@
 import pool from '../config/database.js';
 import { SIMULATOR_CONFIG } from '../config/constants.js';
+import { publishMeterReading, getMeterId } from './iotCoreService.js';
 import moment from 'moment';
 
 class IoTSimulator {
@@ -128,11 +129,16 @@ class IoTSimulator {
     // Stop existing simulation if any
     this.stopSimulation(userId);
 
+    const meterId = getMeterId(userId);
+
     // Generate initial reading
     const reading = await this.generateReading(userId, subscription);
     await this.storeReading(reading);
 
-    // Emit initial reading
+    // 1. Publish to AWS IoT Core (fire-and-forget — never blocks the simulation loop)
+    publishMeterReading(meterId, reading).catch(() => {});
+
+    // 2. Emit initial reading to frontend via Socket.io (preserved for live demo)
     if (io) {
       io.to(`user_${userId}`).emit('energy_update', reading);
     }
@@ -143,7 +149,11 @@ class IoTSimulator {
         const newReading = await this.generateReading(userId, subscription);
         await this.storeReading(newReading);
 
-        // Emit via WebSocket
+        // Publish to AWS IoT Core (fire-and-forget)
+        // IoT Rule routes this to Lambda → DynamoDB at production scale
+        publishMeterReading(meterId, newReading).catch(() => {});
+
+        // Emit to frontend via Socket.io
         if (io) {
           io.to(`user_${userId}`).emit('energy_update', newReading);
         }
@@ -153,7 +163,7 @@ class IoTSimulator {
     }, SIMULATOR_CONFIG.UPDATE_INTERVAL);
 
     this.intervals.set(userId, interval);
-    console.log(`✅ Started IoT simulation for user ${userId}`);
+    console.log(`✅ Started IoT simulation for user ${userId} | Meter: ${meterId}`);
   }
 
   // Stop simulation for a user

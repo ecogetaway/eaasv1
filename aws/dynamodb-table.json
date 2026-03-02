@@ -1,0 +1,40 @@
+{
+  "_comment": "DynamoDB table definition for EaaS energy readings. Create via AWS CLI or Console.",
+  "TableName": "eaas-energy-readings",
+  "BillingMode": "PAY_PER_REQUEST",
+  "KeySchema": [
+    {
+      "AttributeName": "userId",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "timestamp",
+      "KeyType": "RANGE"
+    }
+  ],
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "userId",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "timestamp",
+      "AttributeType": "S"
+    }
+  ],
+  "TimeToLiveSpecification": {
+    "AttributeName": "ttl",
+    "Enabled": true
+  },
+  "Tags": [
+    { "Key": "Project", "Value": "EaaS" },
+    { "Key": "Environment", "Value": "production" },
+    { "Key": "ManagedBy", "Value": "EaaS-Backend" }
+  ],
+  "_scale_notes": {
+    "67K_homes_5min_interval": "13,400 writes/min = 223 writes/sec — within free tier",
+    "5L_homes": "~1,667 writes/sec — DynamoDB handles this without config changes",
+    "1Cr_homes": "~33,333 writes/sec — DynamoDB auto-scales, still single table",
+    "monthly_cost_at_1Cr": "~$200/month for writes alone (vs $50,000+ for RDS)"
+  }
+}

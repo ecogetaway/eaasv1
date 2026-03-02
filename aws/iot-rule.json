@@ -1,0 +1,23 @@
+{
+  "_comment": "IoT Core Rule — routes every meter reading to the processEnergyReading Lambda",
+  "ruleName": "EaaSMeterReadingToLambda",
+  "topicRulePayload": {
+    "sql": "SELECT *, topic(3) AS meterId FROM 'eaas/meters/+/reading'",
+    "description": "Routes all EaaS smart meter readings to Lambda for DynamoDB storage",
+    "ruleDisabled": false,
+    "awsIotSqlVersion": "2016-03-23",
+    "actions": [
+      {
+        "lambda": {
+          "functionArn": "arn:aws:lambda:ap-south-1:YOUR_ACCOUNT_ID:function:processEnergyReading"
+        }
+      }
+    ],
+    "errorAction": {
+      "cloudwatchLogs": {
+        "logGroupName": "/aws/iot/eaas-errors",
+        "roleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/IoTCoreErrorLoggingRole"
+      }
+    }
+  }
+}

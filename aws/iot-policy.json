@@ -1,0 +1,29 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowMeterPublish",
+      "Effect": "Allow",
+      "Action": "iot:Publish",
+      "Resource": "arn:aws:iot:ap-south-1:*:topic/eaas/meters/*/reading"
+    },
+    {
+      "Sid": "AllowMeterConnect",
+      "Effect": "Allow",
+      "Action": "iot:Connect",
+      "Resource": "arn:aws:iot:ap-south-1:*:client/eaas-meter-*"
+    },
+    {
+      "Sid": "AllowBackendSubscribe",
+      "Effect": "Allow",
+      "Action": [
+        "iot:Subscribe",
+        "iot:Receive"
+      ],
+      "Resource": [
+        "arn:aws:iot:ap-south-1:*:topicfilter/eaas/meters/+/reading",
+        "arn:aws:iot:ap-south-1:*:topic/eaas/meters/+/reading"
+      ]
+    }
+  ]
+}
