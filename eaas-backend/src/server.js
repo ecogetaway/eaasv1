@@ -17,6 +17,7 @@ import notificationRoutes from './routes/notifications.js';
 import alertRoutes from './routes/alerts.js';
 import meterRoutes from './routes/meters.js';
 import discomRoutes from './routes/discom.js';
+import uploadRoutes from './routes/upload.js';
 
 dotenv.config();
 
@@ -157,6 +158,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/meters', meterRoutes);
 app.use('/api/discom', discomRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // WebSocket connection handling
 io.on('connection', (socket) => {
