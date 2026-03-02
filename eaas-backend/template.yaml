@@ -1,0 +1,68 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: EaaS Backend - Lambda + API Gateway
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Architectures:
+      - x86_64
+    MemorySize: 512
+    Timeout: 30
+    Environment:
+      Variables:
+        NODE_OPTIONS: --enable-source-maps
+
+Parameters:
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Description: PostgreSQL connection string (e.g. from Supabase or RDS)
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT signing secret
+  FrontendUrl:
+    Type: String
+    Default: https://eaasv1.netlify.app
+    Description: Allowed CORS origin
+
+Resources:
+  EaasApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: eaas-api
+      Handler: src/lambda.handler
+      CodeUri: .
+      Description: EaaS REST API - auth, billing, tickets, energy, etc.
+      MemorySize: 1024
+      Timeout: 29
+      Environment:
+        Variables:
+          NODE_ENV: production
+          DATABASE_URL: !Ref DatabaseUrl
+          JWT_SECRET: !Ref JwtSecret
+          FRONTEND_URL: !Ref FrontendUrl
+          AWS_REGION: ap-south-1
+      Events:
+        ApiRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+        ApiProxy:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Export:
+      Name: EaasApiUrl
+  ApiFunctionArn:
+    Description: Lambda function ARN
+    Value: !GetAtt EaasApiFunction.Arn
+    Export:
+      Name: EaasApiFunctionArn

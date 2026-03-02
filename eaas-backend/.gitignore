@@ -4,4 +4,6 @@ uploads/
 *.log
 .DS_Store
 dist/
+.aws-sam/
+function.zip
 

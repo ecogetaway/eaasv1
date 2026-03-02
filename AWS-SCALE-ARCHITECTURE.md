@@ -116,6 +116,22 @@ Handles: ~100 concurrent users · 2 demo accounts
 
 ---
 
+## Lambda + API Gateway (REST API)
+
+The Express backend is **Lambda-ready**. Use `src/app.js` (no Socket.io) with `src/lambda.js`:
+
+```
+API Gateway (REST) → Lambda (serverless-express) → Express app
+```
+
+**Deploy:** `cd eaas-backend && sam build && sam deploy --guided`
+
+See `eaas-backend/aws/LAMBDA-DEPLOYMENT.md` for full steps.
+
+**WebSocket:** The frontend uses client-side mock for real-time (`USE_MOCK_DATA=true` in socketService). For production WebSocket, add API Gateway WebSocket API + Lambda (separate setup).
+
+---
+
 ## What's Live Right Now
 
 ### ✅ Implemented and deployed
