@@ -419,13 +419,15 @@ const Home = () => {
            This section is managed separately. Preserved exactly as original.
       ──────────────────────────────────────────────────────────────────── */}
       <section className="py-6 bg-gray-900 text-center">
-        <p className="text-gray-400 text-sm mb-2">Are you an IntelliSmart operator?</p>
-        <Link
-          to="/admin"
+        <p className="text-gray-400 text-sm mb-2">Are you an IntelliSmart representative?</p>
+        <a
+          href="https://intellismart-admin.netlify.app"
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 text-green-400 hover:text-green-300 text-sm font-semibold border border-green-400/30 hover:border-green-300/50 rounded-lg px-4 py-2 transition-all"
         >
           ⚡ IntelliSmart Admin Portal →
-        </Link>
+        </a>
       </section>
 
       <Footer />

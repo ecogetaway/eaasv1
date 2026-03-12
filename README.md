@@ -4,7 +4,16 @@ A full-stack Energy-as-a-Service (EaaS) platform prototype built for the Intelli
 
 1. **Consumer App** — [eaasv1.netlify.app](https://eaasv1.netlify.app) — for end consumers to subscribe to solar energy plans, track usage, manage billing, and interact with an AI energy advisor.
 
-2. **IntelliSmart Admin Portal** — [eaasv1.netlify.app/admin](https://eaasv1.netlify.app/admin) — for IntelliSmart operators to manage EaaS rollout across their existing smart meter network across UP, Bihar, Assam, and Gujarat.
+2. **IntelliSmart Admin Portal** — [intellismart-admin.netlify.app](https://intellismart-admin.netlify.app) — for IntelliSmart representatives/operators to manage EaaS rollout across their existing smart meter network across UP, Bihar, Assam, and Gujarat.
+
+### Architecture Note
+The consumer app and operator portal are deliberately maintained as separate frontend deployments with separate auth and service layers. This is a standard security and compliance pattern for B2B2C platforms. Both apps can use a shared backend data layer behind firewall and proxy boundaries, with no direct client database access.
+
+### Deployment
+- **Primary:** Netlify
+  - Consumer app: `eaasv1.netlify.app`
+  - Operator portal: `intellismart-admin.netlify.app`
+- **Backup:** AWS CloudFront static deployment for operator portal (`eaas-admin` build artifacts)
 
 ---
 
